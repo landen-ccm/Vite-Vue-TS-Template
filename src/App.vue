@@ -1,14 +1,29 @@
-<template>
-  <header>
-    <div class="wrapper">
-      <TheNavBar />
-    </div>
-  </header>
 
-  <RouterView />
-</template>
+  <template>
+  <HomePage />
+  </template>
+
+<script setup lang="ts">
+
+import HomePage from "./components/HomePage.vue";
+
+
+
+</script>
+
+
+
+
+
+
+
+
+
+
+
 
 <style lang="scss">
+
 header {
   line-height: 1.5;
   max-height: 100vh;
