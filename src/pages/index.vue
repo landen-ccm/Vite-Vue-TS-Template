@@ -50,4 +50,5 @@ onMounted(() => {
   <div>
     {{ pokemon }}
   </div>
+  <Button>Previous</Button><Button>Next</Button>
 </template>
