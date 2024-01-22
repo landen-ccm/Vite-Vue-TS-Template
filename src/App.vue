@@ -1,7 +1,7 @@
 <template>
   <header>
     <div class="wrapper">
-      <TheNavBar />
+      
     </div>
   </header>
 
