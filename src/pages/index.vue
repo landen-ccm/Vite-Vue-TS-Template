@@ -20,31 +20,28 @@ const sizeOption = ref([
 
 async function clickHandler() {
   if (searchQuery.value == '') {
-    try {
-      pokemonList.value = await getPokemonList()
+    pokemonList.value = await getPokemonList()
+    if (pokemonList.value.length > 0) {
       pokemonError.value = false
-    } catch (error) {
+    } else {
       pokemonError.value = true
-      console.log(error)
     }
   } else {
-    try {
-      pokemonList.value = await getPokemon(searchQuery.value)
-      console.log(pokemonList.value)
+    pokemonList.value = await getPokemon(searchQuery.value)
+    if (pokemonList.value.length > 0) {
       pokemonError.value = false
-    } catch (error) {
+    } else {
       pokemonError.value = true
-      console.log(error)
     }
   }
 }
 
 onMounted(async () => {
-  try {
-    pokemonList.value = await getPokemonList()
-  } catch (error) {
+  pokemonList.value = await getPokemonList()
+  if (pokemonList.value.length > 0) {
+    pokemonError.value = false
+  } else {
     pokemonError.value = true
-    console.log(error)
   }
 })
 </script>

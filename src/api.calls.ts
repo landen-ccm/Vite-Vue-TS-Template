@@ -15,7 +15,7 @@ export async function getPokemon(searchQuery: string) : Promise<Pokemon[]> {
         const pokemon = {name: res.data.name, id:res.data.id}
         return [pokemon]
     } catch {
-        throw new Error('Pokemon not found')
+        return []
     }
 
   }
@@ -26,7 +26,7 @@ export  async function getPokemonList() : Promise<Pokemon[]>{
         console.log(res)
         return res.data.results.map((item: Pokemon, index: number) => {return {name: item.name, id:index+1}})
     } catch {
-        throw new Error('Error retieving pokemon')
+        return []
     }
 
 }
