@@ -5,7 +5,7 @@
     <template #icon>
       <DocumentationIcon />
     </template>
-    <template #heading>Documentation</template>
+    <template #heading>Documentations</template>
 
     Vue's
     <a href="https://vuejs.org/" target="_blank" rel="noopener">official documentation</a>
