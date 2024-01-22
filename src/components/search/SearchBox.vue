@@ -1,0 +1,20 @@
+<script setup lang="ts">
+import Button from 'primevue/button';
+import InputText from 'primevue/inputtext';
+
+import {searchByName} from '../../helpers/apiCalls'
+
+const searchParam = ref('');
+
+
+
+</script>
+
+<template>
+    <div class="search-form p-card">
+        <label for="username">Pokemon search</label>
+        <InputText @keyup.enter="searchByName(searchParam)" v-model="searchParam" id="username" aria-describedby="username-help" />
+        <small id="username-help">Enter the complete name of a pokemon please</small>
+        <Button @click="searchByName(searchParam)">Search</Button>
+    </div>
+</template>
