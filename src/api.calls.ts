@@ -1,21 +1,35 @@
 import axios from 'axios'
-const pokemonURL = `https://pokeapi.co/api/v2/pokemon/`
+import type {
+  PaginationSizeTypes,
+  PokemonCollectionResponse,
+  SinglePokemonResponse
+} from './models/pokedex'
+const pokemonURL = `https://pokeapi.co/api/v2/pokemon`
 
-
-export default async function getPokemon(query: string) {
-    try {
-        const result = await axios
-          .get(pokemonURL + query)
-        return result
-    } catch (error) {
-        console.log(error)
+export async function getPokemon(size: PaginationSizeTypes, page: number) {
+  try {
+    let reqUrl = '?'
+    if (size === 'All') reqUrl = ''
+    else {
+      reqUrl += 'limit=' + size + '&offset=' + size * page
     }
-    //   .then((result) => {
-    //     return result
-    //   })
-    //   .catch((error) => {
-    //     throw new Error(error)
-    //   })
-
-    // return result
+    const result = await axios.get<PokemonCollectionResponse>(`${pokemonURL}/${reqUrl}`)
+    return result
+  } catch (error) {
+    console.log(error)
   }
+}
+
+export async function getPokemonByNameOrId(nameOrId: string) {
+  try {
+    const result = await axios.get<SinglePokemonResponse>(`${pokemonURL}/${nameOrId}`)
+    return result
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+export default {
+  getPokemon,
+  getPokemonByNameOrId
+}
