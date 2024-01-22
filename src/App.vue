@@ -1,8 +1,7 @@
 <template>
+  <Toast />
   <header>
-    <div class="wrapper">
-      
-    </div>
+    <div class="wrapper"></div>
   </header>
 
   <RouterView />
