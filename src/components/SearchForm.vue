@@ -2,23 +2,17 @@
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import Dropdown from 'primevue/dropdown'
-import axios from 'axios'
-import { ref } from 'vue'
-
-const pokemonData = ref()
-const paginationOptions = ['25', '50', '100', 'All']
-const selectedPagination = ref('')
-const searchParam = ref('')
-
-const getPokemon = async (id: string) => {
-  const { data } = await axios.get(`https://pokeapi.co/api/v2/pokemon/${id}`)
-  console.log(data)
-  return data
-}
+import searchFormApi from '../api/searchFormApi'
+import {
+  pokemonData,
+  paginationOptions,
+  selectedPagination,
+  searchParam
+} from '../helpers/searchFormHelpers'
 
 const search = async () => {
   if (searchParam.value) {
-    pokemonData.value = await getPokemon(searchParam.value)
+    pokemonData.value = await searchFormApi.getPokemon(searchParam.value)
   }
 }
 </script>
@@ -46,3 +40,4 @@ const search = async () => {
   gap: 10rem;
 }
 </style>
+../api/searchFormApi ../helpers/searchForm ../helpers/searchFormHelpers
