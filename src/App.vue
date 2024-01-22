@@ -1,4 +1,5 @@
 <template>
+  <h1>Pokemon App</h1>
   <header>
     <div class="wrapper">
       <TheNavBar />
