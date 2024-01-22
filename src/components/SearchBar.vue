@@ -20,21 +20,17 @@ async function search(event: Event) {
 </script>
 
 <template>
-  <Card class="search-card">
-    <template #content>
-      <span class="search-span p-input-icon-right">
-        <i class="pi pi-search"></i>
-        <InputText
-          type="text"
-          class="search-box"
-          @keypress.enter="search"
-          v-model="model"
-          placeholder="Search"
-        ></InputText>
-      </span>
-      <Button label="Submit" @click="search"></Button>
-    </template>
-  </Card>
+  <span class="search-span p-input-icon-right">
+    <i class="pi pi-search"></i>
+    <InputText
+      type="text"
+      class="search-box"
+      @keypress.enter="search"
+      v-model="model"
+      placeholder="Search"
+    ></InputText>
+  </span>
+  <Button label="Submit" @click="search"></Button>
 </template>
 <style>
 .search-card {

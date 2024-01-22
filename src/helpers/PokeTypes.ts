@@ -1,6 +1,7 @@
+import type{ NameUrl} from "@/composable"
 export type PokemonType = {
   slot: number
-  type: NameUrl
+  type: string
 }
 
 export type Pokemon = {
@@ -11,4 +12,9 @@ export type Pokemon = {
   types: PokemonType[]
   height: number
   weight: number
+}
+
+export type Poke = {
+  name: string
+  url: string
 }
