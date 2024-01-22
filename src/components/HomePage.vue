@@ -1,51 +1,103 @@
-<template>
-<div>
+<script setup lang="ts">
+import { onMounted } from 'vue'
+import InputText from 'primevue/inputtext'
+import Dropdown from 'primevue/dropdown'
+import Button from 'primevue/button'
+import Card from 'primevue/card'
+import 'primeicons/primeicons.css'
+import { fetchAllPokemon } from '@/helpers/homePageHelper'
 
-  <input v-model="searchQuery" placeholder="Search Pokemon" />
-    <button @click="searchButtonClicked = true">Search</button>
+type pokemon = {
+  name: string
+  url: string
+  isFav: boolean
+}
+
+type searchresult = {
+  name: string
+  id: string
+}
+
+const searchQuery = ref('')
+const pageSizeOptions = ['25', '50', '100', 'all']
+const pageSize = ref('25')
+const pokemonData = ref<pokemon[]>([])
+const searchResult = ref<searchresult[]>([])
+const isSearching = ref(false)
+
+const showSearchResults = async () => {
+  isSearching.value = true
+  searchResult.value = await fetchAllPokemon({ name: searchQuery.value })
+  console.log('search result', searchResult.value[0])
+}
+
+onMounted(async () => {
+  const param = { limit: pageSize.value }
+  pokemonData.value = await fetchAllPokemon(param)
+  // console.log(pokemonData.value)
+})
+</script>
+
+<template>
+  <div>
+    <InputText
+      v-model="searchQuery"
+      placeholder="Search Pokemon"
+      @keyup.enter="showSearchResults"
+    />
+    <Button @click="showSearchResults">Search</Button>
     <div>
-      <Dropdown v-model="pageSize" :options="pageSizeOptions"/>
+      <Dropdown v-model="pageSize" :options="pageSizeOptions" />
     </div>
     <div>
-      <ul>
-        <li v-for="poke in pokemon" :key="poke.name">
-          {{ poke.name }}
+      <div v-if="isSearching">
+        <Card style="width: 12em; margin-bottom: 10px">
+          <template #header>
+            <h1>{{ searchResult[0]?.name }}</h1>
+          </template>
+          <template #title>
+            <img
+              alt="user header"
+              :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${searchResult[0]?.id}.png`"
+            />
+          </template>
+          <template #subtitle> {{ searchResult[0]?.id }} </template>
+          <template #content><Button>View Details</Button></template>
+          <template #footer><i class="pi pi-heart"></i></template>
+        </Card>
+      </div>
+      <ul v-else>
+        <li v-for="pokemon in pokemonData" :key="pokemon.name">
+          <Card style="width: 12em; margin-bottom: 10px">
+            <template #header>
+              <h1>{{ pokemon.name }}</h1>
+            </template>
+            <template #title>
+              <img
+                alt="user header"
+                :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.url.split('/')[6]}.png`"
+              />
+            </template>
+            <template #subtitle> {{ pokemon.url.split('/')[6] }} </template>
+            <template #content><Button>View Details</Button></template>
+            <template #footer><i class="pi pi-heart"></i></template>
+          </Card>
         </li>
       </ul>
     </div>
-    <button> Next</button>
-    <button> previous</button>
-    </div>
+    <Button> Next</Button>
+    <Button> previous</Button>
+  </div>
 </template>
-<script setup lang="ts">
-import {onMounted} from 'vue'
-import Dropdown from 'primevue/dropdown';
-const searchQuery = ref('');
-const searchButtonClicked = ref(false);
-const pageSize = ref<number | null>(25);
-const pageSizeOptions = [25, 50, 100, 'all'];
 
- onMounted(async () => {
-  await fetchdata(); 
-  });
-
-
-  interface Pokemon {
-  name: string;
-  url: string;
+<style scoped>
+ul {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  grid-template-rows: repeat(5, 1fr);
+  grid-gap: 5px;
 }
-
-const pokemon = ref<Pokemon[]>([]);
-
-  //fetching data
-const fetchdata = async () => {
-  try {
-    const response = await fetch('https://pokeapi.co/api/v2/pokemon');
-    const data = await response.json();
-    pokemon.value = data.results;
-  } catch (error) {
-    console.error('Error fetching', error);
-  }
-};
-
-</script>
+h4 {
+  padding: 3px;
+}
+</style>
