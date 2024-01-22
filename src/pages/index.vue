@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import SearchBar from '../components/SearchBar.vue'
 import Dropdown from 'primevue/dropdown'
+import Button from 'primevue/button'
 
 type PageCount = 25 | 50 | 100 | -1
 
@@ -15,11 +16,20 @@ const showCount = ref<PageCount>(25)
 </script>
 <template>
   <SearchBar @submit="console.log($event)"></SearchBar>
-  <p>Ah</p>
-  <Dropdown
-    v-model="showCount"
-    :options="displayCountOptions"
-    optionLabel="text"
-    optionValue="value"
-  ></Dropdown>
+  <div>
+    <Dropdown
+      v-model="showCount"
+      :options="displayCountOptions"
+      optionLabel="text"
+      optionValue="value"
+    ></Dropdown>
+    <Button class="page-button">Back</Button>
+    <Button class="page-button">Forwards</Button>
+  </div>
 </template>
+
+<style>
+.page-button {
+  margin-left: 1em;
+}
+</style>
