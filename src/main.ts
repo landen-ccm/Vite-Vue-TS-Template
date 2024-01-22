@@ -1,18 +1,19 @@
-import './assets/main.css'
+import './assets/main.scss'
 import { createApp } from 'vue'
 import App from './App.vue'
 import router from './router'
 import PrimeVue from 'primevue/config';
 import 'primeicons/primeicons.css'
 import 'primevue/resources/themes/lara-light-green/theme.css'
-import Dropdown from 'primevue/dropdown'
-import Button from 'primevue/button'
-import InputText from 'primevue/inputtext'
+
+import Tooltip from 'primevue/tooltip';
+
 
 
 
 
 const app = createApp(App)
+app.directive('tooltip', Tooltip);
 app.use(PrimeVue)
 
 app.use(router)

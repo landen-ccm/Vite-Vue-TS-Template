@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import axios from 'axios'
 import { ref } from 'vue'
 import Dropdown from 'primevue/dropdown'
 import Button from 'primevue/button'
 import InputText from 'primevue/inputtext'
-
-const api = 'https://pokeapi.co/api/v2/pokemon/'
+import PokemonCard from '../components/PokemonCard.vue'
+import { getPokemon, getPokemonList } from '../api.calls'
+import type { Pokemon } from '../api.calls'
 const searchQuery = ref('')
-const page_size = ref()
-const results = ref([])
+const pageSize = ref()
+const pokemonList = ref<Pokemon[]>([])
+const pokemonError = ref(false)
+const pageNumber = ref(1)
 const sizeOption = ref([
   { name: '25', val: 25 },
   { name: '50', val: 50 },
@@ -16,20 +18,45 @@ const sizeOption = ref([
   { name: 'ALL', val: 1302 }
 ])
 
-const getPokemon = async () => {
-  const res = await axios.get(api + searchQuery.value)
-  results.value = res.data.results
+async function clickHandler() {
+  if (searchQuery.value == '') {
+    try {
+      pokemonList.value = await getPokemonList()
+      pokemonError.value = false
+    } catch (error) {
+      pokemonError.value = true
+      console.log(error)
+    }
+  } else {
+    try {
+      pokemonList.value = await getPokemon(searchQuery.value)
+      console.log(pokemonList.value)
+      pokemonError.value = false
+    } catch (error) {
+      pokemonError.value = true
+      console.log(error)
+    }
+  }
 }
+
+onMounted(async () => {
+  try {
+    pokemonList.value = await getPokemonList()
+  } catch (error) {
+    pokemonError.value = true
+    console.log(error)
+  }
+})
 </script>
 
 <template>
   <section>
     <div class="header">
-      <InputText type="text" v-model="searchQuery" placeholder="Enter Pokemon's Name or ID" />
-      <Button @click="getPokemon">search</Button>
+      <InputText type="text" v-model.trim="searchQuery" placeholder="Enter Pokemon's Name or ID" />
+      <Button @click="clickHandler">search</Button>
 
       <Dropdown
-        v-model="page_size"
+        v-model="pageSize"
         :options="sizeOption"
         optionLabel="name"
         placeholder="Select a Size"
@@ -37,18 +64,23 @@ const getPokemon = async () => {
       </Dropdown>
     </div>
 
-    <div class="content"></div>
-    <div v-for="res in results">
-      {{ JSON.stringify(res) }}
+    <div class="content" v-if="!pokemonError">
+      <PokemonCard v-for="card in pokemonList" :key="card.id" :pokemon="card">hello</PokemonCard>
     </div>
-
+    <div class="error" v-else>
+      <p>Error: no pokemon found</p>
+    </div>
     <div class="footer">
       <Button> Previous </Button>
       <Button>Next</Button>
     </div>
 
-    {{ page_size }}
+    {{ pageSize }}
   </section>
 </template>
 
-<style lang="scss"></style>
+<style lang="scss">
+.error {
+  color: red;
+}
+</style>
