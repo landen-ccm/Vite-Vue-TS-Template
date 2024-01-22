@@ -6,6 +6,9 @@ import { searchPokemon } from '@/composable/searchPokemon'
 import type { Pokemon } from '@/helpers/PokeTypes'
 
 const model = defineModel<string>('')
+
+// When a search is submitted we either return the
+// pokemon or null through submit event.
 const emits = defineEmits<{
   (e: 'submit', value: Pokemon | null): void
 }>()
