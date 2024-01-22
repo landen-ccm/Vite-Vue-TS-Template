@@ -1,44 +1,24 @@
 <script setup lang="ts">
-import { ref } from 'vue'
 import Button from 'primevue/button'
 import Dropdown from 'primevue/dropdown'
 import InputText from 'primevue/inputtext'
 import 'primeicons/primeicons.css'
-import axios from 'axios'
-
-type displaydata = {
-  count: number
-  next: string
-  previous: string
-  results: {
-    name: string
-    url: string
-  }[]
-}
-
-const searchParam = ref('')
-const pageSize = ref('')
-const pageSizes = ['25', '50', '100', 'all']
-const displayData = ref<displaydata>()
-
-const searchButtonHandler = async () => {
-  //doSomething
-  const response = await axios.get(`https://pokeapi.co/api/v2/pokemon-species/${searchParam.value}`)
-  const searchRes = response.data
-  console.log(searchRes)
-}
+import { searchParam, pageSize, pageSizes, displayData } from './variables'
+import { searchButtonHandler, getData } from '@/helpers/homepageHelpers'
 
 onMounted(async () => {
-  const response = await axios.get('https://pokeapi.co/api/v2/pokemon/?limit=20')
-  displayData.value = response.data
+  // console.log(pageSize.value)
+  displayData.value = await getData(pageSize.value)
 })
 </script>
 <template>
-  <InputText type="text" v-model="searchParam" @keyup.enter="searchButtonHandler" />
-  <Button @click="searchButtonHandler">Search</Button>
+  <div>
+    <InputText type="text" v-model="searchParam" @keyup.enter="searchButtonHandler(searchParam)" />
+    <Button @click="searchButtonHandler(searchParam)">Search</Button>
+  </div>
 
   <div class="card flex justify-content-center">
-    <Dropdown v-model="pageSize" :options="pageSizes" placeholder="25" class="w-full md:w-14rem" />
+    <Dropdown v-model="pageSize" :options="pageSizes" placeholder="Page size" />
   </div>
 
   <div>
