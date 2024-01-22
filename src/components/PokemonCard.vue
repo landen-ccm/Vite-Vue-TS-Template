@@ -52,4 +52,14 @@ const props = defineProps<{
 .img-div {
   display: flex;
 }
+
+.error-message {
+  width: 360px;
+
+  margin: 2rem auto;
+
+  padding: 1rem;
+
+  font-size: xx-large;
+}
 </style>

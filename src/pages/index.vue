@@ -117,16 +117,6 @@ form {
   justify-content: space-between;
 }
 
-.error-message {
-  width: 360px;
-
-  margin: 2rem auto;
-
-  padding: 1rem;
-
-  font-size: xx-large;
-}
-
 .pokemon-grid {
   /* Activate grid layout */
   display: grid;
