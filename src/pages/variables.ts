@@ -28,13 +28,3 @@ export const displayData = ref<displaydata>({
 })
 export const searchResults = ref<pokemon>()
 export const displayedPokemon = ref<pokemon[]>()
-
-export const sortedData = computed(() => {
-  return displayData.value?.results.map((pokemon) => {
-    return {
-      name: pokemon.name,
-      id: pokemon.url.split('pokemon/')[1].slice(0, -1),
-      url: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.url.split('pokemon/')[1].slice(0, -1)}.png`
-    }
-  })
-})

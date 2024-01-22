@@ -3,8 +3,9 @@ import Button from 'primevue/button'
 import Dropdown from 'primevue/dropdown'
 import InputText from 'primevue/inputtext'
 import 'primeicons/primeicons.css'
-import { searchParam, pageSize, pageSizes, displayData, sortedData, displayedPokemon } from './variables'
+import { searchParam, pageSize, pageSizes, displayData, displayedPokemon } from './variables'
 import { searchButtonHandler, getData } from '@/helpers/homepageHelpers'
+import { capitalizeFirstLetter } from '../helpers/functions'
 
 
 
@@ -17,8 +18,6 @@ onMounted(async () => {
       url: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.url.split('pokemon/')[1].slice(0, -1)}.png`
     }
   })
-  // console.log(sortedData.value)
-  console.log(displayedPokemon.value)
 })
 
 </script>
@@ -33,17 +32,22 @@ onMounted(async () => {
   </div>
 
   <div>
-    <ul>
-      <li v-for="pokemon in displayedPokemon" :key="pokemon.name">
-        <base-card>
-          <h2>{{ pokemon.name }}</h2>
-          <img :src="pokemon.url" :alt="pokemon.name">
-          <p>id: {{ pokemon.id }}</p>
-          <i class="pi pi-heart"></i>
+    <div class="flex flex-column md:flex-row md:justify-content-between row-gap-3">
+      <base-card class="flex flex-column" v-for="pokemon in displayedPokemon" :key="pokemon.name">
+        <h3>{{ capitalizeFirstLetter(pokemon.name) }}</h3>
+        <img :src="pokemon.url" :alt="pokemon.name">
+        <div class="button-section">
+          <Button v-tooltip.bottom="{
+            value: 'Add to favorites',
+            pt: {
+              text: 'bg-primary font-medium'
+            }
+          }"><i class="pi pi-heart"></i></Button>
           <Button>View details</Button>
-        </base-card>
-      </li>
-    </ul>
+        </div>
+
+      </base-card>
+    </div>
   </div>
 
   <div>
@@ -51,3 +55,18 @@ onMounted(async () => {
     <Button><i class="pi-angle-double-right">Next</i></Button>
   </div>
 </template>
+
+<style scoped>
+img {
+  width: 300px;
+  height: auto;
+}
+
+li {
+  width: 30%;
+}
+
+.button-section Button {
+  margin: 5px
+}
+</style>
