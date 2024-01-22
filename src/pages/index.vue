@@ -4,7 +4,8 @@ import axios from 'axios'
 import InputText from 'primevue/inputtext'
 import Dropdown from 'primevue/dropdown'
 import Button from 'primevue/button'
-import Image from 'primevue/image'
+
+import PokemonCard from '@/components/PokemonCard.vue'
 
 type PaginationOptionsType = '25' | '50' | '100' | 'All'
 type PokemonData = {
@@ -22,7 +23,7 @@ const paginationOptions: PaginationOptionsType[] = ['25', '50', '100', 'All']
 const pokemonData = ref<PokemonData[]>([])
 const showList = ref(true)
 const currentPokemon = ref<EnhancedPokemonData>()
-const isFavorite = ref(true)
+const isFavorite = ref(false)
 const searchTerm = ref('')
 const paginationSelection = ref<PaginationOptionsType>()
 
@@ -47,6 +48,10 @@ async function getPokemon() {
 }
 
 async function displayDetails(name: string) {
+  if (!name) {
+    showList.value = true
+    return
+  }
   currentPokemon.value = await getPokemonByName(name)
   showList.value = false
 }
@@ -56,7 +61,7 @@ onMounted(async () => {
 })
 </script>
 <template>
-  <div>
+  <div class="container">
     <form @submit.prevent="displayDetails(searchTerm)" class="p-input-icon-left">
       <i class="pi pi-search" @click="displayDetails(searchTerm)" />
       <InputText
@@ -75,34 +80,23 @@ onMounted(async () => {
     </form>
   </div>
   <div>
-    <ul v-if="showList">
-      <li v-for="pokemon in pokemonData" :key="pokemon.name">
-        {{ pokemon.name }}
-      </li>
+    <ul v-if="showList" class="pokemon-grid">
+      <PokemonCard
+        v-for="pokemon in pokemonData"
+        :key="pokemon.name"
+        :name="pokemon.name"
+        :id="parseInt(pokemon.url.split('/')[6])"
+        :sprites="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.url.split('/')[6]}.png`"
+      ></PokemonCard>
     </ul>
-    <div v-else>
-      <div v-if="currentPokemon" class="p-card">
-        <h2>{{ currentPokemon?.name.toUpperCase() }}</h2>
-        <p>Id: {{ currentPokemon?.id }}</p>
-        <div class="img-div">
-          <Image :src="currentPokemon?.sprites.front_default" width="300" alt="pokemon-front" />
-          <Image
-            v-if="currentPokemon?.sprites.back_default"
-            :src="currentPokemon?.sprites.back_default"
-            width="300"
-            alt="pokemon-back"
-          />
-        </div>
-        <div>
-          <i v-if="!isFavorite" class="pi pi-heart" style="font-size: 4rem"></i>
-          <i v-else class="pi pi-heart-fill" style="font-size: 4rem"></i>
-        </div>
-        <Button>View</Button>
-      </div>
-      <div v-else class="error-message">
-        <h1>NO POKEMON WITH THAT NAME OR ID!</h1>
-      </div>
-    </div>
+    <PokemonCard
+      v-else
+      :name="currentPokemon?.name"
+      :id="currentPokemon?.id"
+      :sprites="currentPokemon?.sprites.front_default"
+      :is-favorite="isFavorite"
+      :showList="showList"
+    ></PokemonCard>
   </div>
   <div class="btn-div">
     <Button label="Previous" />
@@ -110,7 +104,10 @@ onMounted(async () => {
   </div>
 </template>
 
-<style lang="scss">
+<style lang="scss" scoped>
+.container {
+  padding: 4rem;
+}
 form {
   display: flex;
   justify-content: space-between;
@@ -118,11 +115,6 @@ form {
 .btn-div {
   display: flex;
   justify-content: space-between;
-}
-.card-container {
-  display: flex;
-
-  flex-wrap: wrap;
 }
 
 .error-message {
@@ -135,28 +127,23 @@ form {
   font-size: xx-large;
 }
 
-.p-card {
-  width: 360px;
+.pokemon-grid {
+  /* Activate grid layout */
+  display: grid;
 
-  margin: 2rem auto;
+  /* Create 5 columns, each 1 "fractional unit" wide */
+  grid-template-columns: repeat(5, 1fr);
 
-  border: 1px solid #c8ced3;
+  /* Create 5 rows, each 1 "fractional unit" high */
+  grid-template-rows: repeat(5, 1fr);
 
-  border-radius: 4px;
-
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-  gap: 20px;
+  /* Add a 10px gap between columns and rows */
+  grid-gap: 10px;
 }
 
-.p-card h2 {
-  font-size: 3rem;
-}
-
-.img-div {
-  display: flex;
+.item {
+  background-color: rgba(229, 229, 229, 0.5);
+  border: 1px solid rgba(128, 128, 128, 0.5);
+  padding: 0.25em;
 }
 </style>
