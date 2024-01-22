@@ -37,7 +37,7 @@ export const useRequest = <ResponseType>(
 
   return {
     invoke,
-    data: readonly(data),
+    data: data,
     code: readonly(code),
     status: readonly(status),
     // Boolean helpers derived from status
