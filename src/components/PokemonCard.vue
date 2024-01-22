@@ -12,9 +12,9 @@ const props = defineProps<{
     <img
       :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${props.pokemon.id}.png`"
     />
-    <div>
-      <i class="pi pi-heart" v-tooltip="'Favorite this pokemon'"></i>
+    <div class="items">
       <Button>View Details</Button>
+      <i class="pi pi-heart" v-tooltip="'Favorite this pokemon'"></i>
     </div>
   </div>
 </template>
@@ -23,5 +23,13 @@ const props = defineProps<{
 .pokemon-card {
   background-color: lightblue;
   outline-style: solid;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+.items {
+  display: flex;
+  gap: 20px;
+  justify-content: center;
 }
 </style>
