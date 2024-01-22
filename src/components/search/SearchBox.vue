@@ -18,3 +18,12 @@ const searchParam = ref('');
         <Button @click="searchByName(searchParam)">Search</Button>
     </div>
 </template>
+
+<style>
+.search-form {
+    display: flex;
+    flex-direction: column;
+    max-width: 300px;
+    gap: 2;
+}
+</style>
