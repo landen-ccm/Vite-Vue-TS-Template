@@ -4,10 +4,6 @@ import SearchForm from './SearchForm.vue'
 </script>
 <template class="pokemon-list">
   <SearchForm></SearchForm>
-  <div class="btn-div">
-    <Button label="Previous" />
-    <Button label="Next" />
-  </div>
 </template>
 
 <style lang="scss">
