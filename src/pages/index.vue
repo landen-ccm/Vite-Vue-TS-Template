@@ -10,18 +10,13 @@ import 'primeicons/primeicons.css'
 import axios from 'axios';
 
 const searchParam = ref('');
-const selectedNum = ref();
+const selectedNum = ref<string | number>();
 const pageSizes = [
     25,
     50,
     100,
     'all'
 ]
-
-const getData = async () => {
-    const { data } = await axios.get('https://pokeapi.co/api/v2/pokemon/');
-    console.log(data);
-}
 
 const searchByName = async () => {
     try {
