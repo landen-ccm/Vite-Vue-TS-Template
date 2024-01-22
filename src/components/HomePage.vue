@@ -15,7 +15,7 @@ type pokemon = {
 
 type searchresult = {
   name: string
-  id: string
+  url: string
 }
 
 const searchQuery = ref('')
@@ -26,9 +26,12 @@ const searchResult = ref<searchresult[]>([])
 const isSearching = ref(false)
 
 const showSearchResults = async () => {
-  isSearching.value = true
-  searchResult.value = await fetchAllPokemon({ name: searchQuery.value })
-  console.log('search result', searchResult.value[0])
+  // isSearching.value = true
+  // console.log(searchResult.value)
+  // const temp = await fetchAllPokemon({ name: searchQuery.value })
+  // console.log(temp)
+  pokemonData.value = await fetchAllPokemon({ name: searchQuery.value })
+  // console.log('search result', pokemonData.value[0])
 }
 
 onMounted(async () => {
@@ -50,23 +53,7 @@ onMounted(async () => {
       <Dropdown v-model="pageSize" :options="pageSizeOptions" />
     </div>
     <div>
-      <div v-if="isSearching">
-        <Card style="width: 12em; margin-bottom: 10px">
-          <template #header>
-            <h1>{{ searchResult[0]?.name }}</h1>
-          </template>
-          <template #title>
-            <img
-              alt="user header"
-              :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${searchResult[0]?.id}.png`"
-            />
-          </template>
-          <template #subtitle> {{ searchResult[0]?.id }} </template>
-          <template #content><Button>View Details</Button></template>
-          <template #footer><i class="pi pi-heart"></i></template>
-        </Card>
-      </div>
-      <ul v-else>
+      <ul>
         <li v-for="pokemon in pokemonData" :key="pokemon.name">
           <Card style="width: 12em; margin-bottom: 10px">
             <template #header>
