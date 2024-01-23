@@ -50,6 +50,7 @@ declare module 'vue-router/auto/routes' {
     '/example-route/nested-without-children': RouteRecordInfo<'/example-route/nested-without-children', '/example-route/nested-without-children', Record<never, never>, Record<never, never>>,
     '/playground/': RouteRecordInfo<'/playground/', '/playground', Record<never, never>, Record<never, never>>,
     '/playground/request/': RouteRecordInfo<'/playground/request/', '/playground/request', Record<never, never>, Record<never, never>>,
+    '/pokemon/[id]': RouteRecordInfo<'/pokemon/[id]', '/pokemon/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
   }
 }
 
