@@ -16,18 +16,38 @@ export type Pokemon = {
     back_shiny_female: SpriteType
   }
 }
+
+type PokemonType = {
+  slot: number
+  type: {
+    name: string
+  }
+}
+
+type PokemonAbility = {
+  ability: { name: string }
+  slot: number
+}
+
+export type EnhancedPokemon = Pokemon & { abilities: PokemonAbility[]; pokemonTypes: PokemonType[] }
+
 type PokemonBatchResponse = {
   name: string
   url: string
 }
 const api = 'https://pokeapi.co/api/v2/pokemon/'
-const imageapi = 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/'
 
 // search for a get a single pokemon
 export async function getPokemon(searchQuery: string): Promise<Pokemon[]> {
   try {
     const res = await axios.get(api + searchQuery)
-    const pokemon = { name: res.data.name, id: res.data.id, sprites: res.data.sprites }
+    const pokemon = {
+      name: res.data.name,
+      id: res.data.id,
+      sprites: res.data.sprites,
+      abilities: res.data.abilities,
+      pokemonTypes: res.data.types
+    }
     return [pokemon]
   } catch {
     return []

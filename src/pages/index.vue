@@ -3,8 +3,9 @@ import PokemonSearchTab from '@/components/PokemonSearchTab.vue'
 import FavoritesTab from '@/components/FavoritesTab.vue'
 import TabPanel from 'primevue/tabpanel'
 import TabView from 'primevue/tabview'
+import { ref } from 'vue'
 
-const favorites = inject<Set<number>>('favorites', new Set())
+const favorites = ref(inject<Set<number>>('favorites', new Set()))
 </script>
 
 <template>

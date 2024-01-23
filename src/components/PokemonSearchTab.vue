@@ -6,22 +6,24 @@ import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import Dropdown from 'primevue/dropdown'
 import PokemonResults from './PokemonResults.vue'
+import { pageSize, sizeOption, MAX_POKEMON, pageNumber } from '@/helpers'
 
 const props = defineProps<{
   favorites: Set<number>
 }>()
 
-const MAX_POKEMON = 1302
+//const MAX_POKEMON = 1302
 const searchQuery = ref('')
-const sizeOption = [
-  { name: '25', val: 25 },
-  { name: '50', val: 50 },
-  { name: '100', val: 100 },
-  { name: 'ALL', val: MAX_POKEMON }
-]
-const pageSize = ref(sizeOption[0])
+// const sizeOption = [
+//   { name: '25', val: 25 },
+//   { name: '50', val: 50 },
+//   { name: '100', val: 100 },
+//   { name: 'ALL', val: MAX_POKEMON }
+// ]
+// const pageSize = ref(sizeOption[0])
 const pokemonList = ref<Pokemon[]>([])
-const pageNumber = ref(1)
+const addAllToFavorites = inject<(pokemonArr: Pokemon[]) => void>('addAllToFavorites', () => {})
+//const pageNumber = ref(1)
 
 watch([pageNumber, pageSize], async () => await fetchPokemon())
 
@@ -65,6 +67,9 @@ onMounted(async () => {
   <div class="pagination-container">
     <Button :disabled="pageNumber === 1 || pokemonList.length <= 1" @click="pageNumber--"
       >Previous</Button
+    >
+    <Button @click="addAllToFavorites(pokemonList)" v-if="pageSize.val !== MAX_POKEMON"
+      >Add All to Favorites</Button
     >
     <Button
       :disabled="pageNumber * pageSize.val >= MAX_POKEMON || pokemonList.length <= 1"
