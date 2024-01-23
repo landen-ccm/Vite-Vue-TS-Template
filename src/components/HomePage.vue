@@ -7,6 +7,12 @@ import Card from 'primevue/card'
 import 'primeicons/primeicons.css'
 import { fetchAllPokemon } from '@/helpers/homePageHelper'
 
+import { useToast } from 'primevue/usetoast';
+import Toast from 'primevue/toast';
+
+
+
+
 type pokemon = {
   name: string
   url: string
@@ -28,7 +34,11 @@ const pokemonData = ref<pokemon[]>([])
 const searchResult = ref<searchresult[]>([])
 const isSearching = ref(false)
 const favoritePokemon = ref<string[]>([])
+const favoritesIsVisible = ref(false);
 
+const toggleFavoritesVisibility = () => {
+  favoritesIsVisible.value = !favoritesIsVisible.value
+}
 
 const showSearchResults = async () => {
   // isSearching.value = true
@@ -39,21 +49,22 @@ const showSearchResults = async () => {
   // console.log('search result', pokemonData.value[0])
 }
 
+
+
+
 const fetchNewData = async (numToAdd?: number) => {
-  if (numToAdd) {
+  if (typeof numToAdd === 'number') {
+    console.log(pageNum.value)
     pageNum.value += numToAdd;
   }
-  const data = await fetchAllPokemon({limit: pageSize.value, page: pageNum.value})
+  console.log(pageSize.value, pageNum.value)
+  const data = await fetchAllPokemon({ limit: pageSize.value, page: pageNum.value })
   console.log(data);
   pokemonData.value = data.results;
   nextPage.value = data.next;
   prevPage.value = data.previous;
 }
 
-const addToFavorites = (name: string) => {
-  favoritePokemon.value.push(name);
-  console.log(favoritePokemon.value)
-}
 
 onMounted(async () => {
   const param = { limit: pageSize.value, page: pageNum.value }
@@ -69,36 +80,22 @@ onMounted(async () => {
 
 <template>
   <div>
-    <InputText
-      v-model="searchQuery"
-      placeholder="Search Pokemon"
-      @keyup.enter="showSearchResults"
-    />
+    <Button @click="toggleFavoritesVisibility">{{ favoritesIsVisible ? 'Hide' : 'Show' }} favorites</Button>
+    <div v-if="favoritesIsVisible">
+      <h2>Favorite Pokemon</h2>
+      <p>You have saved {{ favoritePokemon.length }} pokemon!</p>
+      <p v-for="pokemon in favoritePokemon" :key="pokemon">{{ pokemon }}</p>
+    </div>
+    <InputText v-model="searchQuery" placeholder="Search Pokemon" @keyup.enter="showSearchResults" />
     <Button @click="showSearchResults">Search</Button>
     <div>
-      <Dropdown @blur="fetchNewData" v-model="pageSize" :options="pageSizeOptions" />
+      <Dropdown @blur="fetchNewData()" v-model="pageSize" :options="pageSizeOptions" />
     </div>
     <div>
       <ul v-if="pokemonData">
-        <li v-for="pokemon in pokemonData" :key="pokemon.name">
-          <Card style="width: 12em; margin-bottom: 10px">
-            <template #header>
-              <h1>{{ pokemon.name }}</h1>
-
-            </template>
-            <template #title>
-              <img
-                alt="user header"
-                :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.url.split('/')[6]}.png`"
-              />
-            </template>
-            <template #subtitle> {{ pokemon.url.split('/')[6] }} </template>
-            <template #content><Button>View Details</Button></template>
-            <template #footer><Button @click="addToFavorites(pokemon.name)">
-              <i :class="favoritePokemon.includes(pokemon.name) ? 'pi pi-heart-fill' : 'pi pi-heart'"></i>
-            </Button></template>
-          </Card>
-        </li>
+        <!-- <li v-for="pokemon in pokemonData" :key="pokemon.name"> -->
+          <base-card :pokemon="pokemon" v-for="pokemon in pokemonData" :key="pokemon.name"></base-card>
+        <!-- </li> -->
       </ul>
       <p v-else>No pokemon found</p>
     </div>
@@ -114,6 +111,7 @@ ul {
   grid-template-rows: repeat(5, 1fr);
   grid-gap: 5px;
 }
+
 h4 {
   padding: 3px;
 }

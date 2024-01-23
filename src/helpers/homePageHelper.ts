@@ -10,6 +10,7 @@ export const fetchAllPokemon = async (param: input) => {
       const response = await axios.get(`${ALL_POKEMON_URL}/${param.name}`)
       return [{ name: response.data.name, url: `${ALL_POKEMON_URL}/${response.data.id}` }]
     } else if (param.limit === 'all') {
+      console.log('hello there')
       const response = await axios.get(`${ALL_POKEMON_URL}/?limit=1302`)
       const data = await response.data
       return data
