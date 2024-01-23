@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import type { Pokemon } from '../api.calls'
 
-const props = defineProps<{
-  pokemonList: Pokemon[]
-  favorites: Set<number>
-}>()
+const props = withDefaults(
+  defineProps<{
+    pokemonList: Pokemon[]
+    favorites: Set<number>
+    errorMessage?: string
+  }>(),
+  { errorMessage: 'No Pokemon found' }
+)
 
 const hasError = computed(() => props.pokemonList.length === 0)
 </script>
@@ -19,7 +23,7 @@ const hasError = computed(() => props.pokemonList.length === 0)
     />
   </div>
   <div class="error" v-else>
-    <p>Error: no pokemon found</p>
+    <p>{{ props.errorMessage }}</p>
   </div>
 </template>
 
@@ -29,6 +33,7 @@ const hasError = computed(() => props.pokemonList.length === 0)
   flex-wrap: wrap;
 }
 .error {
+  padding: 20px 0px;
   color: red;
 }
 </style>

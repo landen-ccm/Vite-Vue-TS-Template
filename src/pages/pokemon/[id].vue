@@ -13,13 +13,32 @@ const router = useRouter()
 const poke = ref<EnhancedPokemon | undefined>()
 const numberId = ref(0)
 
-const images = computed(() =>
-  poke.value
-    ? Object.entries(poke.value.sprites)
-        .filter((keyVal) => typeof keyVal[1] === 'string')
-        .map(([key, val]) => ({ name: key.split('_').join(' '), link: val }))
+const images = computed(() => {
+  const imageKeys: (keyof Pokemon['sprites'])[] = [
+    'front_default',
+    'back_default',
+    'front_shiny',
+    'back_shiny',
+    'front_female',
+    'back_female',
+    'front_shiny_female',
+    'back_shiny_female'
+  ]
+  return poke.value
+    ? imageKeys
+        .filter((key) => typeof poke.value?.sprites[key] === 'string')
+        .map((key) => ({ name: key.split('_').join(' '), link: poke.value?.sprites[key] }))
     : []
-)
+})
+
+const nextId = computed(() => {
+  const id = parseInt(route.params.id as string)
+  return id === POKEMON_SKIP_AT_ID ? POKEMON_SKIP_TO_ID : id === FINAL_POKEMON_ID ? 1 : id + 1
+})
+const prevId = computed(() => {
+  const id = parseInt(route.params.id as string)
+  return id === POKEMON_SKIP_TO_ID ? POKEMON_SKIP_AT_ID : id === 1 ? FINAL_POKEMON_ID : id - 1
+})
 
 const handleClick = (typeOfClick: string) => {
   const id = route.params.id as string
@@ -101,8 +120,8 @@ onMounted(async () => {
       </div>
     </Panel>
     <div class="btn-div">
-      <Button @click="handleClick('Prev')">Prev</Button>
-      <Button @click="handleClick('Next')">Next</Button>
+      <Button @click="handleClick('Prev')">#{{ prevId }}</Button>
+      <Button @click="handleClick('Next')">#{{ nextId }}</Button>
     </div>
   </div>
 </template>

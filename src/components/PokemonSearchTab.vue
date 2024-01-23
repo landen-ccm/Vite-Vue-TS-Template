@@ -58,7 +58,9 @@ onMounted(async () => {
     <Button :disabled="pageNumber === 1 || pokemonList.length <= 1" @click="pageNumber--"
       >Previous</Button
     >
-    <Button @click="addAllToFavorites(pokemonList)" v-if="pageSize.val !== MAX_POKEMON"
+    <Button
+      @click="addAllToFavorites(pokemonList)"
+      v-if="pageSize.val !== MAX_POKEMON && pokemonList.length > 0"
       >Add All to Favorites</Button
     >
     <Button
@@ -76,7 +78,7 @@ onMounted(async () => {
   align-items: center;
 }
 .search-bar {
-  width: 250px;
+  width: 450px;
 }
 
 .pagination-container {
