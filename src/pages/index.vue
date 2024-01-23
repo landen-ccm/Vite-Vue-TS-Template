@@ -19,10 +19,12 @@ const displayCountOptions: { text: string; value: PageCount }[] = [
   { text: 'all', value: -1 }
 ]
 
+const query = router.currentRoute.value.query
+
 const allPokemon = ref<Poke[] | null>(null)
 const favoritesLength = ref(localStorage.length)
-const pageNumber = ref(0)
-const showCount = ref<PageCount>(25)
+const pageNumber = ref(query.pageSize ? query.pageSize.toString() : 0)
+const showCount = ref<PageCount>(query.pageIndex ? +query.pageIndex as PageCount : 25)
 const disableForward = ref(false)
 const disableBack = ref(true)
 const toast = useToast()
@@ -38,6 +40,7 @@ const numberOfPages = computed(() => {
 const paginatedData = computed(() => {
   const start = pageNumber.value * showCount.value
   const end = start + showCount.value
+  swapPage()
   return allPokemon.value?.slice(start, end)
 })
 
@@ -53,6 +56,10 @@ const checkForFavorites = () => {
         pokemon.isFav = true
       }
     }
+}
+
+const swapPage = () => {
+  router.push({ name: '/', query: { pageSize: showCount.value, pageIndex: pageNumber.value}})
 }
 
 const forwardButtonHandler = () => {
