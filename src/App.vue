@@ -4,7 +4,7 @@ import Toast from 'primevue/toast'
 <template>
   <header>
     <div class="wrapper">
-      <TheNavBar />
+      <!-- <TheNavBar /> -->
     </div>
   </header>
   <Toast />

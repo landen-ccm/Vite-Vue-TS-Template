@@ -94,6 +94,10 @@ li {
   width: 30%;
 }
 
+button {
+  margin-left: 2em;
+}
+
 .button-section Button {
   margin: 5px;
 }

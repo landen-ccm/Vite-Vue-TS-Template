@@ -23,7 +23,7 @@ const toggleFavorite = () => {
   saveFavorites(favorites.value)
 }
 
-const heartFilled = computed(() => favorites.value[props.id] !== undefined)
+const heartFilled = computed(() => favorites.value[props.id])
 
 const favoriteClasses = computed(() => ({
   'pi-heart': !heartFilled.value,
@@ -64,3 +64,10 @@ const props = defineProps<Pokemon>()
     </template>
   </Card>
 </template>
+
+<style>
+button {
+  margin-left: 2em;
+  height: 3rem;
+}
+</style>
