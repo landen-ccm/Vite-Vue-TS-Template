@@ -57,3 +57,5 @@ export const useRequest = <ResponseType>(
     isSuccess: computed(() => status.value === 'success')
   }
 }
+
+export default useRequest

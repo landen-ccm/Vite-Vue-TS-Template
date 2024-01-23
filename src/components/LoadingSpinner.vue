@@ -1,7 +1,7 @@
 <script setup lang="ts">
 withDefaults(
   defineProps<{
-    text: String
+    text?: String
   }>(),
   {
     text: () => 'Loading'
