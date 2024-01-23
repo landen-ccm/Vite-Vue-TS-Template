@@ -8,17 +8,12 @@ import 'primeicons/primeicons.css'
 import { fetchAllPokemon } from '@/helpers/homePageHelper'
 
 import { useToast } from 'primevue/usetoast';
-import Toast from 'primevue/toast';
-
-import router from '@/router'
-
 
 
 
 type pokemon = {
   name: string
   url: string
-  isFav: boolean
 }
 
 type searchresult = {
@@ -33,9 +28,8 @@ const pageNum = ref(0)
 const nextPage = ref(null);
 const prevPage = ref(null);
 const pokemonData = ref<pokemon[]>([])
-// const searchResult = ref<searchresult[]>([])
-// const isSearching = ref(false)
-const favoritePokemon = ref<string[]>([])
+
+const favoritePokemon = ref(new Map<string, pokemon>())
 const favoritesIsVisible = ref(false);
 
 const toast = useToast();
@@ -43,6 +37,7 @@ const toast = useToast();
 
 const toggleFavoritesVisibility = () => {
   favoritesIsVisible.value = !favoritesIsVisible.value
+  console.log(favoritePokemon.value.entries())
 }
 
 const showSearchResults = async () => {
@@ -70,21 +65,27 @@ const showAddToFavorites = (message: string, severity: 'success' | 'error') => {
   toast.add({ severity: severity, detail: message, life: 3000 });
 };
 
-const addToFavorites = (name: string) => {
-  if (localStorage.getItem('favoritePokemon') === null) {
-    localStorage.setItem('favoritePokemon', JSON.stringify(favoritePokemon.value))
-  }
-  if (favoritePokemon.value.includes(name)) {
-    const itemIdx = favoritePokemon.value.indexOf(name)
-    favoritePokemon.value.splice(itemIdx, 1);
-    showAddToFavorites(`${name} removed from favorites`, 'error');
+const loadFavorites = () => {
+  const store = localStorage.getItem("favoritePokemon")
+  if (store === null || store === "") {
+    favoritePokemon.value = new Map<string, pokemon>()
   } else {
-    favoritePokemon.value.push(name);
-    showAddToFavorites(`${name} added to favorites!`, 'success')
+    const val = JSON.parse(store)
+    favoritePokemon.value = new Map(Object.entries(val))
   }
-  localStorage.setItem('favoritePokemon', JSON.stringify(favoritePokemon.value))
-  console.log(JSON.stringify(favoritePokemon.value))
-  // console.log(favoritePokemon.value)
+}
+
+const addToFavorites = (pokemon: pokemon) => {
+  if (!favoritePokemon.value.has(pokemon.name)) {
+    favoritePokemon.value.set(pokemon.name, pokemon)
+    showAddToFavorites(`${pokemon.name} added to favorites!`, 'success')
+  } else {
+    favoritePokemon.value.delete(pokemon.name)
+    showAddToFavorites(`${pokemon.name} removed from favorites`, 'error');
+  }
+
+  const jstring = JSON.stringify(Object.fromEntries(favoritePokemon.value))
+  localStorage.setItem('favoritePokemon', jstring)
 }
 
 onMounted(async () => {
@@ -94,8 +95,7 @@ onMounted(async () => {
   nextPage.value = data.next;
   prevPage.value = data.previous;
   console.log('local object:', localStorage.getItem('favoritePokemon'))
-  favoritePokemon.value = JSON.parse(localStorage.getItem('favoritePokemon'))
-
+  loadFavorites()
 })
 </script>
 
@@ -107,11 +107,13 @@ onMounted(async () => {
     <Button @click="toggleFavoritesVisibility">{{ favoritesIsVisible ? 'Hide' : 'Show' }} favorites</Button>
     <div v-if="favoritesIsVisible">
       <h2>Favorite Pokemon</h2>
-      <p>You have saved {{ favoritePokemon.length }} pokemon!</p>
-      <p v-for="pokemon in favoritePokemon" :key="pokemon">{{ pokemon }}</p>
-      <card v-for="pokemon in favoritePokemon" :key="pokemon">
-        
-      </card>
+      <p>You have saved {{ favoritePokemon.size }} pokemon!</p>
+      <ul v-if="favoritePokemon.size != 0">
+        <base-card :pokemon="pokemon" v-for="pokemon in favoritePokemon.values()" :key="pokemon.name"
+          :addToFavorites="addToFavorites" :favoritePokemon="favoritePokemon" :id="3"
+          :url="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.url.split('/')[6]}.png`">
+        </base-card>
+      </ul>
     </div>
     <div v-else>
       <InputText v-model="searchQuery" placeholder="Search Pokemon" @keyup.enter="showSearchResults" />
@@ -121,10 +123,9 @@ onMounted(async () => {
       </div>
       <div>
         <ul v-if="pokemonData">
-          <!-- <li v-for="pokemon in pokemonData" :key="pokemon.name"> -->
           <base-card :pokemon="pokemon" v-for="pokemon in pokemonData" :key="pokemon.name"
-            :addToFavorites="addToFavorites" :favoritePokemon="favoritePokemon"></base-card>
-          <!-- </li> -->
+            :addToFavorites="addToFavorites" :favoritePokemon="favoritePokemon" :id="pokemon.url.split('/')[6]"
+            :url="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.url.split('/')[6]}.png`"></base-card>
         </ul>
         <p v-else>No pokemon found</p>
       </div>
