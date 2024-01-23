@@ -66,3 +66,15 @@ export async function getPokemonList(size: number, page: number): Promise<Pokemo
     return []
   }
 }
+export const getFavorites = (): Set<number> => {
+  const favorites = localStorage.getItem('pokemonFavorites')
+  if (favorites === null) {
+    return new Set([])
+  } else {
+    return new Set([...JSON.parse(favorites)])
+  }
+}
+
+export const setFavorites = (pokemonFavorites: Set<number>) => {
+  localStorage.setItem('pokemonFavorites', JSON.stringify([...pokemonFavorites]))
+}
