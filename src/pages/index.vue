@@ -8,6 +8,7 @@ import { getallpokemon } from '@/composable/searchAllPokemon'
 import type { Poke, Pokemon } from '@/helpers/PokeTypes'
 import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
+import router from '@/router'
 
 type PageCount = 25 | 50 | 100 | -1
 
@@ -98,6 +99,18 @@ const addToFavorites = (pokemon: Poke) => {
   }
 }
 
+const addAllToFavorites = () => {
+  paginatedData.value?.forEach((text) => {
+    addToFavorites(text)
+  })
+}
+
+const clearLocalStorage = () => {
+  localStorage.clear();
+  favoritesLength.value = 0;
+  router.go();
+}
+
 const submit = async (res: Pokemon | null) => {
   if (res) {
     allPokemon.value = [{ name: res.name, url: `https://pokeapi.co/api/v2/pokemon/${res.id}` }]
@@ -121,13 +134,10 @@ onMounted(async () => {
   <Button @click="toggleFav">favorites {{ favoritesLength }}</Button>
   <div>
     <div v-if="!showFavorites">
+      <Button @click="addAllToFavorites" v-if="showCount !== -1">Add all to favorites</Button>
       <SearchBar @submit="submit"></SearchBar>
-      <Dropdown
-        v-model="showCount"
-        :options="displayCountOptions"
-        optionLabel="text"
-        optionValue="value"
-      ></Dropdown>
+      <Dropdown v-model="showCount" :options="displayCountOptions" optionLabel="text" optionValue="value"></Dropdown>
+      <!-- <pre style="color: black;">{{ paginatedData }}</pre> -->
       <div class="card-container">
         <ul v-if="allPokemon" class>
           <li v-for="pokemon in paginatedData" :key="pokemon.name">
@@ -137,26 +147,20 @@ onMounted(async () => {
                 <p class="m-0">
                   <img
                     :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.url.split('/')[6]}.png`"
-                    alt="Pokemon Image"
-                  />
+                    alt="Pokemon Image" />
                 </p>
                 <Button>
-                  <router-link
-                    :to="{
-                      path: `/pokemonDetails/${pokemon.name}`,
-                      query: { pokemon: pokemon.url.split('/')[6] }
-                    }"
-                    >view</router-link
-                  >
+                  <router-link :to="{
+                    path: `/pokemonDetails/${pokemon.name}`,
+                    query: { pokemon: pokemon.url.split('/')[6] }
+                  }">view</router-link>
                 </Button>
               </template>
-              <template #footer
-                ><Toast />
-                <i
-                  :class="pokemon.isFav === true ? 'pi pi-heart-fill' : 'pi pi-heart'"
-                  @click="addToFavorites(pokemon)"
-                ></i
-              ></template>
+              <template #footer>
+                <Toast />
+                <i :class="pokemon.isFav === true ? 'pi pi-heart-fill' : 'pi pi-heart'"
+                  @click="addToFavorites(pokemon)"></i>
+              </template>
             </Card>
           </li>
         </ul>
@@ -164,13 +168,9 @@ onMounted(async () => {
       </div>
     </div>
     <div v-else>
+      <Button @click="clearLocalStorage">Remove all favorites</Button>
       <SearchBar @submit="submit"></SearchBar>
-      <Dropdown
-        v-model="showCount"
-        :options="displayCountOptions"
-        optionLabel="text"
-        optionValue="value"
-      ></Dropdown>
+      <Dropdown v-model="showCount" :options="displayCountOptions" optionLabel="text" optionValue="value"></Dropdown>
       <ul>
         <li v-for="pokemon in Object.values(favorites)" :key="JSON.parse(pokemon).name">
           <Card class="p-card">
@@ -179,17 +179,13 @@ onMounted(async () => {
               <p class="m-0">
                 <img
                   :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${JSON.parse(pokemon).url.split('/')[6]}.png`"
-                  alt="Pokemon Image"
-                />
+                  alt="Pokemon Image" />
               </p>
               <Button>
-                <router-link
-                  :to="{
-                    path: `/pokemonDetails/${pokemon.name}`,
-                    query: { pokemon: JSON.parse(pokemon).url.split('/')[6] }
-                  }"
-                  >view</router-link
-                >
+                <router-link :to="{
+                  path: `/pokemonDetails/${pokemon.name}`,
+                  query: { pokemon: JSON.parse(pokemon).url.split('/')[6] }
+                }">view</router-link>
               </Button>
             </template>
           </Card>
@@ -197,9 +193,7 @@ onMounted(async () => {
       </ul>
     </div>
     <Button class="page-button" @click="backButtonHandler" :disabled="disableBack">Back</Button>
-    <Button class="page-button" @click="forwardButtonHandler" :disabled="disableForward"
-      >Forwards</Button
-    >
+    <Button class="page-button" @click="forwardButtonHandler" :disabled="disableForward">Forwards</Button>
   </div>
   <footer>{{ pageNumber + 1 }}</footer>
 </template>
@@ -208,9 +202,11 @@ onMounted(async () => {
 .page-button {
   margin-left: 1em;
 }
+
 .page-button:disabled {
   opacity: 0.2;
 }
+
 .card-container {
   display: flex;
   flex-wrap: wrap;
