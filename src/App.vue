@@ -1,12 +1,29 @@
-<template>
-  <header>
-    <div class="wrapper">
-      <TheNavBar />
-    </div>
-  </header>
+<script setup lang="ts">
 
-  <RouterView />
+import HomePage from "./components/HomePage.vue";
+
+import router from "./router";
+
+const favoritePokemon = ref<string[]>([])
+
+const removeFavorite = ((itemIdx: number) => {
+  favoritePokemon.value.splice(itemIdx, 1);
+})
+
+const addFavorite = ((name: string) => {
+  favoritePokemon.value.push(name);
+})
+
+onMounted(() => {
+  console.log('App mounted!')
+})
+
+</script>
+
+<template>
+  <router-view></router-view>
 </template>
+
 
 <style lang="scss">
 header {
