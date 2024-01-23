@@ -1,9 +1,9 @@
 <template>
-  <header>
+  <!-- <header>
     <div class="wrapper">
       <TheNavBar />
     </div>
-  </header>
+  </header> -->
 
   <RouterView />
 </template>

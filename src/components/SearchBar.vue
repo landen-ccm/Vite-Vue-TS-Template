@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import Card from 'primevue/card'
 import InputText from 'primevue/inputtext'
 import Button from 'primevue/button'
 import { searchPokemon } from '@/composable/searchPokemon'
@@ -10,10 +9,10 @@ const model = defineModel<string>('')
 // When a search is submitted we either return the
 // pokemon or null through submit event.
 const emits = defineEmits<{
-  (e: 'submit', value: Pokemon | null): void
+  (e: 'submit', res: Pokemon | null): void
 }>()
 
-async function search(event: Event) {
+async function search() {
   const res = await searchPokemon(model.value!)
   emits('submit', res)
 }
