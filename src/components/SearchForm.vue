@@ -42,7 +42,7 @@ const getPokemon = async () => {
 
 const handleNext = async () => {
   const { data } = await axios.get(next.value)
-  offset.value += selectedPagination.value === 'All' ? parseInt(selectedPagination.value) : 1302
+  offset.value += selectedPagination.value === 'All' ? 1032 : parseInt(selectedPagination.value)
   pokemonData.value = data.results
   previous.value = data.previous
   next.value = data.next
@@ -50,7 +50,7 @@ const handleNext = async () => {
 
 const handlePrevious = async () => {
   const { data } = await axios.get(previous.value)
-  offset.value -= selectedPagination.value === 'All' ? parseInt(selectedPagination.value) : 1302
+  offset.value -= selectedPagination.value === 'All' ? 1302 : parseInt(selectedPagination.value)
   pokemonData.value = data.results
   previous.value = data.previous
   next.value = data.next
