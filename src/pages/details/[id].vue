@@ -4,8 +4,13 @@ import Image from 'primevue/image'
 import { getPokemonByNameOrId } from '../../api.calls'
 import { onMounted, ref } from 'vue'
 import { type SinglePokemonResponse } from '../../models/pokedex'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
+import FINAL_POKEMON_ID from '../../pages/index.vue'
+import Panel from 'primevue/panel'
+import Accordion from 'primevue/accordion'
+import AccordionTab from 'primevue/accordiontab'
 
+const router = useRouter()
 const route = useRoute()
 const pokemonDetails = ref<SinglePokemonResponse>({
   id: 0,
@@ -49,6 +54,23 @@ const handleClick = (typeOfClick: string) => {
   }
 }
 
+const switchPokemon = async (typeOfClick: string) => {
+  if (typeOfClick === 'Next') {
+    console.log(route.params.id)
+    if (route.params.id === FINAL_POKEMON_ID) return
+    router.push(`/details/${parseInt(route.params.id) + 1}`)
+  } else {
+    if (route.params.id === '1') return
+    router.push(`/details/${parseInt(route.params.id) - 1}`)
+  }
+  const response = await getPokemonByNameOrId(route.params.id.toString())
+  pokemonDetails.value = response?.data as SinglePokemonResponse
+}
+
+const back = () => {
+  router.replace('/')
+}
+
 onMounted(async () => {
   const response = await getPokemonByNameOrId(route.params.id.toString())
   pokemonDetails.value = response?.data as SinglePokemonResponse
@@ -57,6 +79,7 @@ onMounted(async () => {
 <template>
   <div class="p-card">
     <div v-if="pokemonDetails">
+      <Button @click="back">Back to List</Button>
       <h2>Pokemon Name: {{ pokemonDetails.name.toUpperCase() }}</h2>
       <h3>Pokemon Id: {{ pokemonDetails.id }}</h3>
       <Image
@@ -72,7 +95,36 @@ onMounted(async () => {
       <Button @click="handleClick('Prev')">Prev</Button>
       <Button @click="handleClick('Next')">Next</Button>
     </div>
+    <div class="btn-div">
+      <Button @click="switchPokemon('Prev')">Prev Pokemon</Button>
+      <Button @click="switchPokemon('Next')">Next Pokemon</Button>
+    </div>
   </div>
+  <Panel header="MORE" toggleable>
+    <div>
+      <Accordion :multiple="true" :activeIndex="[0]">
+        <AccordionTab header="Abilities">
+          <ul v-for="ability in pokemonDetails.abilities">
+            <ol>
+              {{
+                ability.ability.name
+              }}
+            </ol>
+          </ul>
+        </AccordionTab>
+        <AccordionTab header="Types">
+          <ul v-for="t in pokemonDetails.types">
+            <ol>
+              {{
+                t.type.name
+              }}
+            </ol>
+          </ul>
+          
+        </AccordionTab>
+      </Accordion>
+    </div>
+  </Panel>
 </template>
 <style scoped>
 .p-card {
