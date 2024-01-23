@@ -66,7 +66,7 @@ onMounted(async () => {
 
 <template>
   <div v-if="poke" class="container">
-    <h1>#{{ poke.id }} - {{ poke.name }}</h1>
+    <h1>#{{ poke.id }} - {{ poke.name.toUpperCase() }}</h1>
     <Carousel
       class="carousel"
       :value="images"
@@ -79,20 +79,26 @@ onMounted(async () => {
         <div class="carousel-card">
           <img :src="slotProps.data.link" :alt="slotProps.data.name" />
           <h1>
-            {{ slotProps.data.name }}
+            {{ slotProps.data.name.toUpperCase() }}
           </h1>
         </div>
       </template>
     </Carousel>
-    <Panel header="Abilities and Type(s)" toggleable>
-      <h2>Types:</h2>
-      <p v-for="pokemonType in poke.pokemonTypes" :key="pokemonType.slot">
-        {{ pokemonType.type.name }}
-      </p>
-      <h2>Abilities:</h2>
-      <p v-for="pokemonAbility in poke.abilities" :key="pokemonAbility.slot">
-        {{ pokemonAbility.ability.name }}
-      </p>
+    <Panel header="Abilities and Type(s)" toggleable class="panel">
+      <div class="panel-content">
+        <div>
+          <h2>Types:</h2>
+          <p v-for="pokemonType in poke.pokemonTypes" :key="pokemonType.slot">
+            {{ pokemonType.type.name.toUpperCase() }}
+          </p>
+        </div>
+        <div>
+          <h2>Abilities:</h2>
+          <p v-for="pokemonAbility in poke.abilities" :key="pokemonAbility.slot">
+            {{ pokemonAbility.ability.name.toUpperCase() }}
+          </p>
+        </div>
+      </div>
     </Panel>
     <div class="btn-div">
       <Button @click="handleClick('Prev')">Prev</Button>
@@ -102,6 +108,13 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.panel {
+  width: 100%;
+}
+.panel-content {
+  display: flex;
+  gap: 2rem;
+}
 .container {
   display: flex;
   flex-direction: column;
