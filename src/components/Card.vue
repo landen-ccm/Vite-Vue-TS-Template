@@ -1,12 +1,26 @@
 <script setup lang="ts">
-import { ref } from 'vue'
-const heart = ref('pi pi-heart')
-const like = () => {
-  if (heart.value == 'pi pi-heart') {
-    heart.value = 'pi pi-heart-fill'
-  } else {
-    heart.value = 'pi pi-heart'
+import Button from 'primevue/button'
+import { useRouter } from 'vue-router'
+const router = useRouter()
+const props = defineProps({
+  isLiked: {
+    type: Boolean,
+    default: false
+  },
+  id: {
+    type: Number
   }
+})
+const emit = defineEmits(['likeEvent'])
+
+const heart = computed(() => (props.isLiked ? 'pi pi-heart-fill' : 'pi pi-heart'))
+
+const like = () => {
+  emit('likeEvent')
+}
+const detailHandler = () => {
+  console.log('hello')
+  router.push(`/details/${props.id}`)
 }
 </script>
 
@@ -24,7 +38,7 @@ const like = () => {
     <div class="addToLike" style="margin-bottom: 10px">
       <i @click="like" :class="heart" style="font-size: 2rem"></i>
     </div>
-    <Button> View Details </Button>
+    <Button @click="detailHandler"> View Details </Button>
   </div>
 </template>
 

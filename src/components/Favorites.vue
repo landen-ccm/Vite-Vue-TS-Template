@@ -1,8 +1,8 @@
 <script setup lang="ts">
+// this page is a copy paste of cardlist with some filtering
 import { ref } from 'vue'
 import Card from './Card.vue'
 import { getFavorites, setFavorites } from '../api.calls'
-
 type PokemonData = {
   name: string
   url: string
@@ -18,27 +18,19 @@ const props = defineProps<{
 }>()
 
 const { pokemonData } = toRefs(props)
+const favoriteAmount = getFavorites().size
+const favoritePokemon = computed(() => {
+  const favorites = getFavorites()
+  const reformattedData = pokemonData.value.map((item) => {
+    // parse url for id
+    const urlParsing = item.url.split('/')
+    const id = parseInt(urlParsing[urlParsing.length - 2])
+    // check if it is favorited or not
 
-const reformattedData = ref()
-
-watch(
-  pokemonData,
-  () => {
-    if (!pokemonData.value) return
-
-    reformattedData.value = pokemonData.value.map((item) => {
-      // parse url for id
-      const urlParsing = item.url.split('/')
-      const id = parseInt(urlParsing[urlParsing.length - 2])
-      // check if it is favorited or not
-      const favoritePokemon = getFavorites()
-      return { name: item.name, id: id, isLiked: favoritePokemon.has(id) }
-    })
-  },
-  {
-    immediate: true
-  }
-)
+    return { name: item.name, id: id, isLiked: favorites.has(id) }
+  })
+  return reformattedData.filter((pokemon) => pokemon.isLiked)
+})
 
 const toggleLike = (pokemon: Pokemon) => {
   pokemon.isLiked = !pokemon.isLiked
@@ -54,10 +46,10 @@ const toggleLike = (pokemon: Pokemon) => {
 
 <template>
   <div class="card-container1">
+    <h1>Favorites: {{ favoriteAmount }}</h1>
     <Card
-      v-for="pokemon in reformattedData"
+      v-for="pokemon in favoritePokemon"
       :is-liked="pokemon.isLiked"
-      :id="pokemon.id"
       :key="pokemon.id"
       @likeEvent="toggleLike(pokemon)"
     >

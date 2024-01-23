@@ -1,5 +1,7 @@
 <script setup lang="ts">
+import { useRoute } from 'vue-router'
 import Button from 'primevue/button'
+const route = useRoute
 </script>
 <template>
   <div class="btn-div">
