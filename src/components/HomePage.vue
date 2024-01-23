@@ -10,6 +10,8 @@ import { fetchAllPokemon } from '@/helpers/homePageHelper'
 import { useToast } from 'primevue/usetoast';
 import Toast from 'primevue/toast';
 
+import router from '@/router'
+
 
 
 
@@ -36,15 +38,19 @@ const isSearching = ref(false)
 const favoritePokemon = ref<string[]>([])
 const favoritesIsVisible = ref(false);
 
+const toast = useToast();
+
+// const props = defineProps(['favoritePokemon', 'removeFavorite', 'addFavorite'])
+
+
 const toggleFavoritesVisibility = () => {
   favoritesIsVisible.value = !favoritesIsVisible.value
+  console.log(localStorage.getItem('favoritePokemon'))
+  console.log('haieohoiearae');
 }
 
 const showSearchResults = async () => {
-  // isSearching.value = true
-  // console.log(searchResult.value)
-  // const temp = await fetchAllPokemon({ name: searchQuery.value })
-  // console.log(temp)
+
   pokemonData.value = await fetchAllPokemon({ name: searchQuery.value })
   // console.log('search result', pokemonData.value[0])
 }
@@ -65,6 +71,29 @@ const fetchNewData = async (numToAdd?: number) => {
   prevPage.value = data.previous;
 }
 
+const showAddToFavorites = (message: string, severity: 'success' | 'error') => {
+  toast.add({ severity: severity, detail: message, life: 3000 });
+};
+
+const addToFavorites = (name: string) => {
+  if (localStorage.getItem('favoritePokemon') === null) {
+    localStorage.setItem('favoritePokemon', JSON.stringify(favoritePokemon.value))
+  }
+  if (favoritePokemon.value.includes(name)) {
+    const itemIdx = favoritePokemon.value.indexOf(name)
+    favoritePokemon.value.splice(itemIdx, 1);
+    showAddToFavorites(`${name} removed from favorites`, 'error');
+  } else {
+    // props.addFavorite(name)
+    showAddToFavorites(`${name} added to favorites!`, 'success')
+    favoritePokemon.value.push(name);
+  }
+  localStorage.setItem('favoritePokemon', JSON.stringify(favoritePokemon.value))
+  console.log(JSON.stringify(favoritePokemon.value))
+  // console.log(favoritePokemon.value)
+}
+
+// onActivated()
 
 onMounted(async () => {
   const param = { limit: pageSize.value, page: pageNum.value }
@@ -73,34 +102,43 @@ onMounted(async () => {
   pokemonData.value = data.results;
   nextPage.value = data.next;
   prevPage.value = data.previous;
+  console.log('local object:', localStorage.getItem('favoritePokemon'))
+  // favoritePokemon.value =  as string[]
   // console.log(prevPage.value)
   // console.log(pokemonData.value)
 })
 </script>
 
+
 <template>
   <div>
+
+    <Button @click="router.push({ name: '/pokemon/SinglePokemon' })">Go to details</Button>
     <Button @click="toggleFavoritesVisibility">{{ favoritesIsVisible ? 'Hide' : 'Show' }} favorites</Button>
     <div v-if="favoritesIsVisible">
       <h2>Favorite Pokemon</h2>
       <p>You have saved {{ favoritePokemon.length }} pokemon!</p>
       <p v-for="pokemon in favoritePokemon" :key="pokemon">{{ pokemon }}</p>
+      <p>HELLOO</p>
     </div>
-    <InputText v-model="searchQuery" placeholder="Search Pokemon" @keyup.enter="showSearchResults" />
-    <Button @click="showSearchResults">Search</Button>
-    <div>
-      <Dropdown @blur="fetchNewData()" v-model="pageSize" :options="pageSizeOptions" />
+    <div v-else>
+      <InputText v-model="searchQuery" placeholder="Search Pokemon" @keyup.enter="showSearchResults" />
+      <Button @click="showSearchResults">Search</Button>
+      <div>
+        <Dropdown @blur="fetchNewData()" v-model="pageSize" :options="pageSizeOptions" />
+      </div>
+      <div>
+        <ul v-if="pokemonData">
+          <!-- <li v-for="pokemon in pokemonData" :key="pokemon.name"> -->
+          <base-card :pokemon="pokemon" v-for="pokemon in pokemonData" :key="pokemon.name"
+            :addToFavorites="addToFavorites" :favoritePokemon="favoritePokemon"></base-card>
+          <!-- </li> -->
+        </ul>
+        <p v-else>No pokemon found</p>
+      </div>
+      <Button :disabled="!prevPage" @click="fetchNewData(-1)"> Previous</Button>
+      <Button :disabled="!nextPage" @click="fetchNewData(1)"> Next</Button>
     </div>
-    <div>
-      <ul v-if="pokemonData">
-        <!-- <li v-for="pokemon in pokemonData" :key="pokemon.name"> -->
-          <base-card :pokemon="pokemon" v-for="pokemon in pokemonData" :key="pokemon.name"></base-card>
-        <!-- </li> -->
-      </ul>
-      <p v-else>No pokemon found</p>
-    </div>
-    <Button :disabled="!prevPage" @click="fetchNewData(-1)"> Previous</Button>
-    <Button :disabled="!nextPage" @click="fetchNewData(1)"> Next</Button>
   </div>
 </template>
 

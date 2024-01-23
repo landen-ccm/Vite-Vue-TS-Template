@@ -31,11 +31,11 @@ export const fetchAllPokemon = async (param: input) => {
   }
 }
 
-// export const fetchOnePokemon = async (name: string) => {
-//   try {
-//     const response = await axios.get(`${SINGLE_POKEMON_URL}/${name}`)
-//     return response.data
-//   } catch (error) {
-//     throw new Error('No data found')
-//   }
-// }
+export const fetchOnePokemon = async (name: string) => {
+  try {
+    const response = await axios.get(`${ALL_POKEMON_URL}/${name}`)
+    return response.data
+  } catch (error) {
+    throw new Error('No data found')
+  }
+}
