@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { onUpdated } from 'vue'
 import { getDetails } from '@/helpers/homepageHelpers'
 import { useRoute, useRouter } from 'vue-router'
 import type { DetailedPokemon, PokeType } from '../helpers/types'
@@ -10,15 +11,18 @@ import Button from 'primevue/button'
 const route = useRoute()
 const router = useRouter()
 const pokeId = route.query.id?.toString()!
+const isshowDetails = ref(false)
 const data = ref<DetailedPokemon>({
   name: 'bulbasaur',
   id: 1,
   types: [
-    { name: 'grass', url: 'https://pokeapi.co/api/v2/type/12/' },
-    { name: 'poison', url: 'https://pokeapi.co/api/v2/type/4/' }
+    { type: { name: 'grass', url: 'https://pokeapi.co/api/v2/type/12/' } },
+    { type: { name: 'poison', url: 'https://pokeapi.co/api/v2/type/4/' } }
   ],
-  weight: 69,
-  height: 7,
+  abilities: [
+    { ability: { name: 'overgrow', url: 'https://pokeapi.co/api/v2/ability/65/' } },
+    { ability: { name: 'chlorophyll', url: 'https://pokeapi.co/api/v2/ability/34/' } }
+  ],
   sprites: {
     front_default: 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png'
   }
@@ -36,30 +40,27 @@ const sprites = computed(() => {
   return outSprites
 })
 
-const displayTypes = computed(() => {
-  const outTypes: PokeType[] = []
-  for (const type of [...data.value.types]) {
-    if (type !== null) {
-      outTypes.push(type)
-    }
-  }
-  return outTypes
+const showDetails = () => {
+  isshowDetails.value = !isshowDetails.value
+}
+
+onUpdated(() => {
+  location.reload()
 })
 
 onMounted(async () => {
   const d = await getDetails(pokeId)
-  console.log(d)
+  console.log(d.types)
   if (d) {
     data.value.name = d.name
     data.value.id = d.id
-    data.value.weight = d.weight
-    data.value.height = d.height
+    data.value.abilities = d.abilities
     data.value.types = d.types
     data.value.sprites = d.sprites
   } else {
     alert('Invalid pokemon ID!')
   }
-  console.dir(data)
+  console.dir(data.value.types)
 })
 </script>
 
@@ -79,12 +80,29 @@ onMounted(async () => {
               <h2>Details</h2>
             </template>
             <template #content>
-              <ul>
-                <li v-for="t of displayTypes" :key="t.name" :href="t.url">{{ t.name }}</li>
-              </ul>
-              <div style="display: flex; flex-flow: column; align-items: center">
-                <a>Weight: {{ data.weight }}</a>
-                <a>Height: {{ data.height }}</a>
+              <Button @click="showDetails" style="width: 5.5em; margin-bottom: 5px"> More </Button>
+              <div
+                style="display: flex; flex-flow: column; align-items: center"
+                v-if="isshowDetails"
+              >
+                <ul style="display: flex">
+                  Abilities:&nbsp;
+                  <li v-for="a in data.abilities" :key="a.ability.name">
+                    {{ a.ability.name }}&nbsp;
+                  </li>
+                </ul>
+                <ul style="display: flex">
+                  Types:&nbsp;
+                  <li v-for="t in data.types" :key="t.type.name">{{ t.type.name }}&nbsp;</li>
+                </ul>
+              </div>
+              <div>
+                <Button @click="router.push({ name: 'details', query: { id: +pokeId - 1 } })"
+                  >Prev</Button
+                >
+                <Button @click="router.push({ name: 'details', query: { id: +pokeId + 1 } })"
+                  >Next</Button
+                >
                 <Button @click="router.push({ name: 'home' })" style="width: 5.5em"> Home </Button>
               </div>
             </template>

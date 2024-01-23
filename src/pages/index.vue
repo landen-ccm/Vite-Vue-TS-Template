@@ -11,10 +11,12 @@ import {
   displayData,
   displayedPokemon,
   currentPage,
-  pokeFavorites
+  pokeFavorites,
+  favorites
 } from './variables'
 import { searchButtonHandler, getData } from '@/helpers/homepageHelpers'
 import { capitalizeFirstLetter } from '../helpers/functions'
+import { saveFavorites } from '@/helpers/storeFavorite'
 
 const router = useRouter()
 
@@ -44,6 +46,14 @@ const movePage = (direction: 1 | -1) => {
   updateDisplayed()
 }
 
+const addAllToFavorites = () => {
+  console.log(displayedPokemon.value)
+  displayedPokemon.value.forEach((pokemon) => {
+    favorites.value[pokemon.id] = pokemon
+  })
+  saveFavorites(favorites.value)
+}
+
 onMounted(() => updateDisplayed())
 </script>
 <template>
@@ -53,6 +63,7 @@ onMounted(() => updateDisplayed())
     <Button @click="router.push({ name: 'favorites' })"
       >Favorites: {{ pokeFavorites.length }}</Button
     >
+    <Button @click="addAllToFavorites" v-if="currentPageSize < 10000">Add all to Favorites</Button>
   </div>
 
   <div class="card flex justify-content-center">

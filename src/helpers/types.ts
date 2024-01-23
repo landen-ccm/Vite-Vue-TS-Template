@@ -18,16 +18,21 @@ export type Pokemon = {
 export type Favorites = { [key: number]: Pokemon | null }
 
 export type PokeType = {
-  name: string
-  url: string
+  type: {
+    name: string
+    url: string
+  }
+}
+
+export type PokeAbility = {
+  ability: { name: string; url: string }
 }
 
 export type DetailedPokemon = {
   name: string
   id: number
   types: PokeType[]
-  weight: number
-  height: number
+  abilities: PokeAbility[]
   sprites: {
     [key: string]: string | null
   }

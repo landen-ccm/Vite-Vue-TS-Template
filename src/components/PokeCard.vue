@@ -20,6 +20,7 @@ const toggleFavorite = () => {
     favorites.value[props.id] = ref(props).value // A tad hacky
     toast.add({ severity: 'success', summary: `Added ${props.name} to favorites!`, life: 2000 })
   }
+  console.log(favorites.value)
   saveFavorites(favorites.value)
 }
 

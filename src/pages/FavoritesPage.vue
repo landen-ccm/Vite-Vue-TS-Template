@@ -1,10 +1,15 @@
 <script setup lang="ts">
 import PokeCard from '@/components/PokeCard.vue'
-import { pokeFavorites } from './variables'
+import { favorites, pokeFavorites } from './variables'
 import { useRouter } from 'vue-router'
 import Button from 'primevue/button'
 
 const router = useRouter()
+const clearFavorites = () => {
+  localStorage.clear()
+  favorites.value = []
+  router.replace({ name: 'home' })
+}
 </script>
 
 <template>
@@ -16,4 +21,5 @@ const router = useRouter()
     :name="poke.name"
     :url="poke.url"
   ></PokeCard>
+  <Button @click="clearFavorites" style="width: 5.5em"> Remove all </Button>
 </template>
