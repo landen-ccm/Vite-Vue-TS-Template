@@ -58,6 +58,10 @@ function viewDetails() {
   position: relative;
 }
 
+.pokemon-card:hover img {
+  animation: bounce 1.5s infinite;
+}
+
 .pokemon-card h1 {
   font-size: 1.25rem;
   color: white;
@@ -82,7 +86,6 @@ img {
   top: 35%;
   left: 50%;
   margin-left: -30px;
-  animation: bounce 2s infinite;
 }
 
 @keyframes bounce {
