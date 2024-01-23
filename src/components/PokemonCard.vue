@@ -47,10 +47,15 @@ function viewDetails() {
 <style scoped>
 .pokemon-card {
   width: 360px;
+  height: 250px;
   margin: 2rem auto;
   border: 1px solid #c8ced3;
   border-radius: 4px;
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
 }
 
 .pokemon-card h1 {
@@ -70,5 +75,29 @@ function viewDetails() {
 }
 .pi {
   cursor: pointer;
+}
+
+img {
+  position: absolute;
+  top: 35%;
+  left: 50%;
+  margin-left: -30px;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-15px);
+  }
+  60% {
+    transform: translateY(-10px);
+  }
 }
 </style>
