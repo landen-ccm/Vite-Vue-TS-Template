@@ -1,10 +1,13 @@
+<script setup lang="ts">
+import Toast from 'primevue/toast'
+</script>
 <template>
   <header>
     <div class="wrapper">
       <TheNavBar />
     </div>
   </header>
-
+  <Toast />
   <RouterView />
 </template>
 
