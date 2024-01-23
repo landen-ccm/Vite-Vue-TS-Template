@@ -27,6 +27,7 @@ const prevPage = ref(null);
 const pokemonData = ref<pokemon[]>([])
 const searchResult = ref<searchresult[]>([])
 const isSearching = ref(false)
+const favoritePokemon = ref<string[]>([])
 
 
 const showSearchResults = async () => {
@@ -47,6 +48,11 @@ const fetchNewData = async (numToAdd?: number) => {
   pokemonData.value = data.results;
   nextPage.value = data.next;
   prevPage.value = data.previous;
+}
+
+const addToFavorites = (name: string) => {
+  favoritePokemon.value.push(name);
+  console.log(favoritePokemon.value)
 }
 
 onMounted(async () => {
@@ -78,6 +84,7 @@ onMounted(async () => {
           <Card style="width: 12em; margin-bottom: 10px">
             <template #header>
               <h1>{{ pokemon.name }}</h1>
+
             </template>
             <template #title>
               <img
@@ -87,7 +94,9 @@ onMounted(async () => {
             </template>
             <template #subtitle> {{ pokemon.url.split('/')[6] }} </template>
             <template #content><Button>View Details</Button></template>
-            <template #footer><i class="pi pi-heart"></i></template>
+            <template #footer><Button @click="addToFavorites(pokemon.name)">
+              <i :class="favoritePokemon.includes(pokemon.name) ? 'pi pi-heart-fill' : 'pi pi-heart'"></i>
+            </Button></template>
           </Card>
         </li>
       </ul>
