@@ -12,19 +12,9 @@ const props = defineProps<{
   favorites: Set<number>
 }>()
 
-//const MAX_POKEMON = 1302
 const searchQuery = ref('')
-// const sizeOption = [
-//   { name: '25', val: 25 },
-//   { name: '50', val: 50 },
-//   { name: '100', val: 100 },
-//   { name: 'ALL', val: MAX_POKEMON }
-// ]
-// const pageSize = ref(sizeOption[0])
 const pokemonList = ref<Pokemon[]>([])
 const addAllToFavorites = inject<(pokemonArr: Pokemon[]) => void>('addAllToFavorites', () => {})
-//const pageNumber = ref(1)
-
 watch([pageNumber, pageSize], async () => await fetchPokemon())
 
 async function fetchPokemon() {

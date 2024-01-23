@@ -84,15 +84,15 @@ onMounted(async () => {
         </div>
       </template>
     </Carousel>
-    <Panel header="Abilities and Type(s)" toggleable class="panel">
+    <Panel header="Abilities and Type(s)" toggleable class="panel" :collapsed="true">
       <div class="panel-content">
-        <div>
+        <div class="panel-content-types-abilities">
           <h2>Types:</h2>
           <p v-for="pokemonType in poke.pokemonTypes" :key="pokemonType.slot">
             {{ pokemonType.type.name.toUpperCase() }}
           </p>
         </div>
-        <div>
+        <div class="abilities-div">
           <h2>Abilities:</h2>
           <p v-for="pokemonAbility in poke.abilities" :key="pokemonAbility.slot">
             {{ pokemonAbility.ability.name.toUpperCase() }}
@@ -108,12 +108,20 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+h1 {
+  color: white;
+}
 .panel {
   width: 100%;
 }
 .panel-content {
   display: flex;
-  gap: 2rem;
+  justify-content: space-evenly;
+  gap: 4rem;
+}
+
+.panel-content h2 {
+  font-size: 1.5rem;
 }
 .container {
   display: flex;

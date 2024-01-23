@@ -46,12 +46,16 @@ function viewDetails() {
 
 <style scoped>
 .pokemon-card {
-  background-color: lightblue;
   width: 360px;
   margin: 2rem auto;
   border: 1px solid #c8ced3;
   border-radius: 4px;
   padding: 1rem;
+}
+
+.pokemon-card h1 {
+  font-size: 1.25rem;
+  color: white;
 }
 .info {
   display: flex;
