@@ -17,15 +17,20 @@ const pokemonSprites = ref<string[]>([])
 const id = ref(route.query.pokemon as unknown as number)
 
 const abilities = ref<[ability: { name: string; url: string; }]>([])
+const types = ref()
 
 const nextName = ref();
 const next = ref()
 
-onMounted(async () => {
-  pokemonDetails.value = await searchPokemon(id.value)
+const initialCall = async () => {
+  pokemonSprites.value = [];
+  console.log('id', id.value)
+  // console.log()
+  pokemonDetails.value = await searchPokemon(id.value.toString())
   // console.log(typeof id)
-  console.log(pokemonDetails?.value?.abilities)
+  console.log(pokemonDetails?.value)
   abilities.value = pokemonDetails?.value?.abilities!
+  types.value = pokemonDetails.value?.types
   const pokemonSpriteObject = pokemonDetails.value?.sprites
   for (const key in pokemonSpriteObject) {
     if (pokemonSpriteObject[key] && key != 'other' && key != 'versions')
@@ -36,18 +41,41 @@ onMounted(async () => {
   console.log(next.value.name)
   // console.log(pokemonSprites.value)
   // console.log('mounted', id)
+}
+
+onMounted(async () => {
+  await initialCall()
 })
 
-const goForward = () => {
-  id.value++
-  router.push({
+const goForward = async () => {
+  if (id.value === 10276) {
+    id.value = 1
+  } else {
+    id.value++
+  }
+  router.replace({
     path: `/pokemonDetails/${nextName.value}`,
     query: { pokemon: +id.value.toString() }
   })
-  router.go();
+  await initialCall()
+  // updateView()
+  // router.go();
 }
 
-onUpdated(async () => {
+const goBack = async () => {
+  if (id.value === 1) {
+    id.value = 10276
+  } else {
+    id.value--
+  }
+  router.replace({
+    path: `/pokemonDetails/${nextName.value}`,
+    query: { pokemon: +id.value.toString() }
+  })
+  await initialCall()
+}
+
+async function updateView() {
   // pokemonDetails.value = await searchPokemon(id)
   console.log('updated');
   pokemonDetails.value = await searchPokemon(id.value)
@@ -62,9 +90,9 @@ onUpdated(async () => {
   nextName.value = next.value.name
   console.log(next.value.name)
   // router.go();
-  // location.reload()
+  location.reload()
 
-})
+}
 </script>
 
 <template>
@@ -80,13 +108,12 @@ onUpdated(async () => {
       </template>
     </Carousel>
     <!-- {{ id }} -->
-    <button>Back</button>
+    <button @click="goBack">Back</button>
     <button @click="goForward">Next</button>
     <div class="card">
       <Accordion :activeIndex="-1">
-        <AccordionTab header="Header I">
+        <AccordionTab header="Abilities">
           <!-- <pre >{{abilities}}</pre> -->
-          <p>Abilities: </p>
           <div v-for="ability in abilities" :key="ability.name">
             <p>{{ ability.ability.name }}</p>
           </div>
@@ -95,21 +122,20 @@ onUpdated(async () => {
             <template #content><p>{{ ability }}</p></template>
           </Card> -->
         </AccordionTab>
-        <AccordionTab header="Header II">
-          <p class="m-0">
-            Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem
-            aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo.
-            Nemo enim
-            ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui
-            ratione voluptatem sequi nesciunt. Consectetur, adipisci velit, sed quia non numquam eius modi.
-          </p>
+        <AccordionTab header="Types">
+          <div v-for="type in types" :key="type.name">
+            <p>{{ type.type.name }}</p>
+          </div>
         </AccordionTab>
       </Accordion>
     </div>
 
   </div>
-  <router-view></router-view></template>
+  <router-view></router-view>
+</template>
 
-<style scoped>button {
+<style scoped>
+button {
   margin: 50px 0 10px 10px;
-}</style>
+}
+</style>
