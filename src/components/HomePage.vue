@@ -21,9 +21,13 @@ type searchresult = {
 const searchQuery = ref('')
 const pageSizeOptions = ['25', '50', '100', 'all']
 const pageSize = ref('25')
+const pageNum = ref(0)
+const nextPage = ref(null);
+const prevPage = ref(null);
 const pokemonData = ref<pokemon[]>([])
 const searchResult = ref<searchresult[]>([])
 const isSearching = ref(false)
+
 
 const showSearchResults = async () => {
   // isSearching.value = true
@@ -34,9 +38,25 @@ const showSearchResults = async () => {
   // console.log('search result', pokemonData.value[0])
 }
 
+const fetchNewData = async (numToAdd?: number) => {
+  if (numToAdd) {
+    pageNum.value += numToAdd;
+  }
+  const data = await fetchAllPokemon({limit: pageSize.value, page: pageNum.value})
+  console.log(data);
+  pokemonData.value = data.results;
+  nextPage.value = data.next;
+  prevPage.value = data.previous;
+}
+
 onMounted(async () => {
-  const param = { limit: pageSize.value }
-  pokemonData.value = await fetchAllPokemon(param)
+  const param = { limit: pageSize.value, page: pageNum.value }
+  const data = await fetchAllPokemon(param);
+  // console.log(data);
+  pokemonData.value = data.results;
+  nextPage.value = data.next;
+  prevPage.value = data.previous;
+  // console.log(prevPage.value)
   // console.log(pokemonData.value)
 })
 </script>
@@ -50,10 +70,10 @@ onMounted(async () => {
     />
     <Button @click="showSearchResults">Search</Button>
     <div>
-      <Dropdown v-model="pageSize" :options="pageSizeOptions" />
+      <Dropdown @blur="fetchNewData" v-model="pageSize" :options="pageSizeOptions" />
     </div>
     <div>
-      <ul>
+      <ul v-if="pokemonData">
         <li v-for="pokemon in pokemonData" :key="pokemon.name">
           <Card style="width: 12em; margin-bottom: 10px">
             <template #header>
@@ -71,9 +91,10 @@ onMounted(async () => {
           </Card>
         </li>
       </ul>
+      <p v-else>No pokemon found</p>
     </div>
-    <Button> Next</Button>
-    <Button> previous</Button>
+    <Button :disabled="!prevPage" @click="fetchNewData(-1)"> Previous</Button>
+    <Button :disabled="!nextPage" @click="fetchNewData(1)"> Next</Button>
   </div>
 </template>
 
