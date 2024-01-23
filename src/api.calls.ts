@@ -9,7 +9,9 @@ const pokemonURL = `https://pokeapi.co/api/v2/pokemon`
 export async function getPokemon(size: PaginationSizeTypes, page: number) {
   try {
     let reqUrl = '?'
-    if (size === 'All') reqUrl = ''
+    if (size === 'All') {
+      reqUrl +=  'limit=' + 1302 
+    }
     else {
       reqUrl += 'limit=' + size + '&offset=' + size * page
     }

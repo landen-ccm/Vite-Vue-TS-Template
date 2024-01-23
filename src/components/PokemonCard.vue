@@ -1,18 +1,32 @@
 <script setup lang="ts">
 import type { SpriteLinkType } from '@/models/pokedex'
 import Button from 'primevue/button'
+import { type SinglePokemonResponse } from '../models/pokedex/index'
 
 const props = withDefaults(
   defineProps<{
     id?: number
     name?: string
     image?: SpriteLinkType | undefined
+    isFav: SinglePokemonResponse[]
   }>(),
   { id: 0, name: 'Error', image: undefined }
 )
 
+const emit = defineEmits(['like', 'view'])
+const handleLike = () => {
+  emit('like', props.id)
+}
+
+const handleView = () => {
+  emit('view', props.id)
+}
+
 const displayId = computed(() => props.id.toString().padStart(4, '0'))
 const displayName = computed(() => props.name.toUpperCase())
+const isFavoriteComp = computed(() => props.isFav.some((x) => x.id === props.id))
+// router.push({name: '[/id]'})
+// const id = route.params.id
 </script>
 
 <template>
@@ -23,8 +37,19 @@ const displayName = computed(() => props.name.toUpperCase())
       <div v-else>Image not found</div>
     </div>
     <div class="action-container">
-      <i class="pi pi-heart" v-tooltip.top="'Add to Favorites'" />
-      <Button>View</Button>
+      <i
+        v-if="!isFavoriteComp"
+        class="pi pi-heart"
+        v-tooltip.top="'Add to Favorites'"
+        @click="handleLike"
+      />
+      <i
+        v-else
+        class="pi pi-heart-fill"
+        v-tooltip.top="'Remove from Favorites'"
+        @click="handleLike"
+      />
+      <Button @click="handleView">View</Button>
     </div>
   </div>
 </template>
