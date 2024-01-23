@@ -1,81 +1,104 @@
+<script setup lang="ts">
+import Button from 'primevue/button'
+import Dropdown from 'primevue/dropdown'
+import InputText from 'primevue/inputtext'
+import { useRouter } from 'vue-router'
+import 'primeicons/primeicons.css'
+import {
+  searchParam,
+  pageSize,
+  pageSizes,
+  displayData,
+  displayedPokemon,
+  currentPage,
+  pokeFavorites
+} from './variables'
+import { searchButtonHandler, getData } from '@/helpers/homepageHelpers'
+import { capitalizeFirstLetter } from '../helpers/functions'
+
+const router = useRouter()
+
+const updateDisplayed = async () => {
+  displayData.value = await getData(currentPageSize.value, currentPage.value)
+  displayedPokemon.value = displayData.value.results.map((pokemon) => {
+    return {
+      name: pokemon.name,
+      id: +pokemon.url.split('pokemon/')[1].slice(0, -1),
+      url: `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.url.split('pokemon/')[1].slice(0, -1)}.png`
+    }
+  })
+}
+
+const currentPageSize = computed(() => {
+  const num: number = +pageSize.value
+  console.log(num)
+  if (isNaN(num)) {
+    return 100000 // This is bad, this should never be a hard coded value!
+  } else {
+    return num
+  }
+})
+
+const movePage = (direction: 1 | -1) => {
+  currentPage.value += direction
+  updateDisplayed()
+}
+
+onMounted(() => updateDisplayed())
+</script>
 <template>
-  <HelloWorld msg="Vite Vue TS" />
+  <div>
+    <InputText type="text" v-model="searchParam" @keyup.enter="searchButtonHandler(searchParam)" />
+    <Button @click="searchButtonHandler(searchParam)">Search</Button>
+    <Button @click="router.push({ name: 'favorites' })"
+      >Favorites: {{ pokeFavorites.length }}</Button
+    >
+  </div>
 
-  <WelcomeItem>
-    <template #icon>
-      <DocumentationIcon />
-    </template>
-    <template #heading>Documentation</template>
+  <div class="card flex justify-content-center">
+    <Dropdown
+      @change="updateDisplayed()"
+      v-model="pageSize"
+      :options="pageSizes"
+      placeholder="Page size"
+    />
+  </div>
 
-    Vue's
-    <a href="https://vuejs.org/" target="_blank" rel="noopener">official documentation</a>
-    provides you with all information you need to get started.
-  </WelcomeItem>
-
-  <WelcomeItem>
-    <template #icon>
-      <ToolingIcon />
-    </template>
-    <template #heading>Tooling</template>
-
-    This project is served and bundled with
-    <a href="https://vitejs.dev/guide/features.html" target="_blank" rel="noopener">Vite</a>. The
-    recommended IDE setup is
-    <a href="https://code.visualstudio.com/" target="_blank" rel="noopener">VSCode</a> +
-    <a href="https://github.com/johnsoncodehk/volar" target="_blank" rel="noopener">Volar</a>. If
-    you need to test your components and web pages, check out
-    <a href="https://www.cypress.io/" target="_blank" rel="noopener">Cypress</a> and
-    <a href="https://on.cypress.io/component" target="_blank" rel="noopener"
-      >Cypress Component Testing</a
-    >.
-
-    <br />
-
-    More instructions are available in <code>README.md</code>.
-  </WelcomeItem>
-
-  <WelcomeItem>
-    <template #icon>
-      <EcosystemIcon />
-    </template>
-    <template #heading>Ecosystem</template>
-
-    Get official tools and libraries for your project:
-    <a href="https://pinia.vuejs.org/" target="_blank" rel="noopener">Pinia</a>,
-    <a href="https://router.vuejs.org/" target="_blank" rel="noopener">Vue Router</a>,
-    <a href="https://test-utils.vuejs.org/" target="_blank" rel="noopener">Vue Test Utils</a>, and
-    <a href="https://github.com/vuejs/devtools" target="_blank" rel="noopener">Vue Dev Tools</a>. If
-    you need more resources, we suggest paying
-    <a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">Awesome Vue</a>
-    a visit.
-  </WelcomeItem>
-
-  <WelcomeItem>
-    <template #icon>
-      <CommunityIcon />
-    </template>
-    <template #heading>Community</template>
-
-    Got stuck? Ask your question on
-    <a href="https://chat.vuejs.org" target="_blank" rel="noopener">Vue Land</a>, our official
-    Discord server, or
-    <a href="https://stackoverflow.com/questions/tagged/vue.js" target="_blank" rel="noopener"
-      >StackOverflow</a
-    >. You should also subscribe to
-    <a href="https://news.vuejs.org" target="_blank" rel="noopener">our mailing list</a> and follow
-    the official
-    <a href="https://twitter.com/vuejs" target="_blank" rel="noopener">@vuejs</a>
-    twitter account for latest news in the Vue world.
-  </WelcomeItem>
-
-  <WelcomeItem>
-    <template #icon>
-      <SupportIcon />
-    </template>
-    <template #heading>Support Vue</template>
-
-    As an independent project, Vue relies on community backing for its sustainability. You can help
-    us by
-    <a href="https://vuejs.org/sponsor/" target="_blank" rel="noopener">becoming a sponsor</a>.
-  </WelcomeItem>
+  <div class="flex flex-column md:flex-row md:justify-content-between row-gap-3">
+    <PokeCard
+      class="flex flex-column"
+      v-for="pokemon in displayedPokemon"
+      :key="pokemon.name"
+      :name="pokemon.name"
+      :id="+pokemon.id"
+      :url="pokemon.url"
+    />
+  </div>
+  <div>
+    <Button :disabled="currentPage <= 0" @click="movePage(-1)"
+      ><i class="pi-angle-double-left">Prev</i></Button
+    >
+    <Button @click="movePage(1)" :disabled="displayData.next === null"
+      ><i class="pi-angle-double-right">Next</i></Button
+    >
+  </div>
 </template>
+
+<style scoped>
+img {
+  width: 300px;
+  height: auto;
+}
+
+li {
+  width: 30%;
+}
+
+button {
+  margin-left: 2em;
+}
+
+.button-section Button {
+  margin: 5px;
+}
+</style>
