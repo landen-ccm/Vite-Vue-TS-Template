@@ -1,6 +1,18 @@
 <script setup lang="ts">
 import Image from 'primevue/image'
 import Button from 'primevue/button'
+import { ref } from 'vue'
+import { useRouter } from 'vue-router'
+import Toast from 'primevue/toast'
+import { useToast } from 'primevue/usetoast'
+const toast = useToast()
+
+const route = useRouter()
+
+type favoritePokemonData = {
+  name: string
+  id: number
+}
 
 const props = defineProps<{
   name?: string
@@ -8,7 +20,38 @@ const props = defineProps<{
   sprites?: string
   showList?: boolean
   isFavorite?: boolean
+  favorite_list?: Array<favoritePokemonData>
 }>()
+
+const heart = ref('pi pi-heart')
+
+const emit = defineEmits(['favorite-event'])
+
+function addToFavorite() {
+  if (heart.value == 'pi pi-heart') {
+    heart.value = 'pi pi-heart-fill'
+    emit('favorite-event', { name: props.name, id: props.id, type: 'add' })
+    toast.add({ severity: 'info', summary: 'Info', detail: 'Added To Favorite', life: 3000 })
+  } else {
+    heart.value = 'pi pi-heart'
+    emit('favorite-event', { name: props.name, id: props.id, type: 'remove' })
+    toast.add({ severity: 'info', summary: 'Info', detail: 'Removed From Favorite', life: 3000 })
+  }
+}
+
+function viewDetail() {
+  route.push('/' + props.id)
+}
+
+onMounted(() => {
+  if (props.favorite_list == undefined) return
+  for (let i = 0; i < props.favorite_list.length; i++) {
+    if (props.favorite_list[i].id == props.id) {
+      heart.value = 'pi pi-heart-fill'
+      break
+    }
+  }
+})
 </script>
 
 <template>
@@ -20,10 +63,10 @@ const props = defineProps<{
         <Image v-if="props.sprites" :src="props.sprites" width="300" alt="pokemon-front" />
       </div>
       <div>
-        <i v-if="!isFavorite" class="pi pi-heart" style="font-size: 4rem"></i>
-        <i v-else class="pi pi-heart-fill" style="font-size: 4rem"></i>
+        <i @click="addToFavorite" v-if="!isFavorite" :class="heart" style="font-size: 4rem"></i>
       </div>
-      <Button>View</Button>
+      <Toast />
+      <Button @click="viewDetail">View</Button>
     </div>
     <div v-else class="error-message">
       <h1>NO POKEMON WITH THAT NAME OR ID!</h1>

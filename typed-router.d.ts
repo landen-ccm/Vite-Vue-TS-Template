@@ -48,8 +48,11 @@ declare module 'vue-router/auto/routes' {
     '/example-route/nested-route/double-nested/triple-nested/': RouteRecordInfo<'/example-route/nested-route/double-nested/triple-nested/', '/example-route/nested-route/double-nested/triple-nested', Record<never, never>, Record<never, never>>,
     '/example-route/nested-route/double-nested/triple-nested/some-page': RouteRecordInfo<'/example-route/nested-route/double-nested/triple-nested/some-page', '/example-route/nested-route/double-nested/triple-nested/some-page', Record<never, never>, Record<never, never>>,
     '/example-route/nested-without-children': RouteRecordInfo<'/example-route/nested-without-children', '/example-route/nested-without-children', Record<never, never>, Record<never, never>>,
+    '/main': RouteRecordInfo<'/main', '/main', Record<never, never>, Record<never, never>>,
     '/playground/': RouteRecordInfo<'/playground/', '/playground', Record<never, never>, Record<never, never>>,
     '/playground/request/': RouteRecordInfo<'/playground/request/', '/playground/request', Record<never, never>, Record<never, never>>,
+    '/playground copy/': RouteRecordInfo<'/playground copy/', '/playground copy', Record<never, never>, Record<never, never>>,
+    '/playground copy/request/': RouteRecordInfo<'/playground copy/request/', '/playground copy/request', Record<never, never>, Record<never, never>>,
   }
 }
 
