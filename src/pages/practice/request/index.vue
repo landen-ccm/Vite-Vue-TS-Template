@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import axios from 'axios'
 import { useRequest } from '@/composable/useRequest'
+import { onBeforeMount } from 'vue'
 
 type ToDo = {
   userId: number
@@ -18,19 +19,17 @@ const {
   isLoading,
   isError
 } = useRequest<ToDo[]>(async () => {
-  await new Promise((resolve) => setTimeout(resolve, 1000)) // mock slower loading
-  const response = await axios.get('https://jsonplaceholder.typicode.com/todos')
-  response.data.message = 'Hello World'
-  return response
+  await new Promise((resolve) => setTimeout(resolve, 500)) // mock slower loading
+  return await axios.get('https://jsonplaceholder.typicode.com/todos')
 })
 
-onBeforeMount(() => {
-  getToDos()
+onBeforeMount(async () => {
+  await getToDos()
 })
 </script>
 
 <template>
-  <h1>Fetch Playground</h1>
+  <h1>Fetch</h1>
   <button class="my-4" @click="getToDos">Invoke</button>
 
   <LoadingSpinner v-if="isLoading" />
