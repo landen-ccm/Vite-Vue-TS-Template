@@ -12,7 +12,7 @@ const handleLike = (id: number) => {
 }
 </script>
 <template>
-  <PokemonCard
+  <PokemonCard data-test="card"
     v-for="(poke, idx) in props.isFav"
     :key="poke ? poke.id : idx"
     :id="poke?.id"

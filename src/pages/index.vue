@@ -21,6 +21,8 @@ const selectedPage = ref(0)
 const isFetching = ref(true)
 const showFav = ref(false)
 
+const inputtext = ref()
+
 async function searchHandler() {
   if (searchQuery.value === '') {
     selectedSize.value = 25
@@ -85,13 +87,17 @@ async function addAll() {
   const from = selectedPage.value * selectedSize.value + 1
   const to = (selectedPage.value + 1) * selectedSize.value
   for (let i = from; i <= to; i++) {
-    // const res = isFav.value.reduce((a, b)=>{
-    //   a |= ((b.id+1)==i)
-    //   return a
-    // }, false)
-    // if(res) break
-    const result = await fetchPokemonByNameOrId('' + i)
-    isFav.value.push(result.data)
+    let check = true
+    for (let j = 0; j < isFav.value.length; j++) {
+      if (isFav.value[j].id == i) {
+        check = false
+        break
+      }
+    }
+    if (check) {
+      const result = await fetchPokemonByNameOrId('' + i)
+      isFav.value.push(result.data)
+    }
   }
 }
 
@@ -130,11 +136,14 @@ function handleFav() {
 onMounted(() => {
   handleGetAllPokemon()
 })
+
 </script>
 
 <template>
   <Toast />
-  <h2 v-if="!showFav" @click="handleFav" class="fav">Favorites {{ isFav.length }}</h2>
+  <InputText v-model="inputtext" data-test="inputtext"></InputText>
+  <div data-test="showtext">{{ inputtext }}</div>
+  <h2 v-if="!showFav" @click="handleFav" class="fav">Favorites {{ isFav?.length }}</h2>
   <h2 v-else @click="handleFav" class="fav">Back to list</h2>
 
   <div v-if="showFav">
@@ -153,7 +162,9 @@ onMounted(() => {
         <Button @click="addAll" style="margin-left: 5px; margin-right: 5px"
           >Add all to Favorites</Button
         >
-        <Button :disabled="selectedSize=='All'" @click="removeAll">Remove all from Favorites</Button>
+        <Button :disabled="selectedSize == 'All'" @click="removeAll"
+          >Remove all from Favorites</Button
+        >
       </div>
       <Dropdown
         :options="dropdownSizes"

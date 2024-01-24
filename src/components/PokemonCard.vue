@@ -22,16 +22,16 @@ const handleView = () => {
   emit('view', props.id)
 }
 
+const test = 0
+
 const displayId = computed(() => props.id.toString().padStart(4, '0'))
 const displayName = computed(() => props.name.toUpperCase())
 const isFavoriteComp = computed(() => props.isFav.some((x) => x.id === props.id))
-// router.push({name: '[/id]'})
-// const id = route.params.id
 </script>
 
 <template>
   <div class="card">
-    <h3>#{{ displayId }} - {{ displayName }}</h3>
+    <h3 data-test = "display">#{{ displayId }} - {{ displayName }}</h3>
     <div>
       <img v-if="props.image" :src="props.image" :alt="props.name" />
       <div v-else>Image not found</div>
@@ -49,7 +49,7 @@ const isFavoriteComp = computed(() => props.isFav.some((x) => x.id === props.id)
         v-tooltip.top="'Remove from Favorites'"
         @click="handleLike"
       />
-      <Button @click="handleView">View</Button>
+      <Button data-test = "button" @click="handleView">View</Button>
     </div>
   </div>
 </template>

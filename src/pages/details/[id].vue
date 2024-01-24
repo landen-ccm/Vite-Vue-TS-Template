@@ -56,15 +56,16 @@ const handleClick = (typeOfClick: string) => {
 
 const switchPokemon = async (typeOfClick: string) => {
   if (typeOfClick === 'Next') {
-    console.log(route.params.id)
-    if (route.params.id === FINAL_POKEMON_ID) return
-    router.push(`/details/${parseInt(route.params.id) + 1}`)
+    let next_id = parseInt(route.params.id as string) + 1
+    const response = await getPokemonByNameOrId(route.params.id.toString())
+    pokemonDetails.value = response?.data as SinglePokemonResponse
+    router.push(`/details/${next_id}`)
   } else {
-    if (route.params.id === '1') return
-    router.push(`/details/${parseInt(route.params.id) - 1}`)
+    let prev_id = parseInt(route.params.id as string) - 1
+    const response = await getPokemonByNameOrId(route.params.id.toString())
+    pokemonDetails.value = response?.data as SinglePokemonResponse
+    router.push(`/details/${prev_id}`)
   }
-  const response = await getPokemonByNameOrId(route.params.id.toString())
-  pokemonDetails.value = response?.data as SinglePokemonResponse
 }
 
 const back = () => {
@@ -120,7 +121,6 @@ onMounted(async () => {
               }}
             </ol>
           </ul>
-          
         </AccordionTab>
       </Accordion>
     </div>
