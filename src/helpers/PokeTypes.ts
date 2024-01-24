@@ -4,13 +4,17 @@ export type PokemonType = {
   type: string
 }
 
+export type PokeAbility = {
+  ability: {
+    name: string
+    url: string
+  }
+}
+
 export type Pokemon = {
   id: number
   name: string
-  abilities: [ability: {
-    name: string,
-    url: string
-  }]
+  abilities: PokeAbility[]
   sprites: { [key: string]: string }
   base_experience: number
   types: PokemonType[]

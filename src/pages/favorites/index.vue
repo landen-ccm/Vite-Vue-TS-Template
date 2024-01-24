@@ -1,7 +1,4 @@
-<script setup lang="ts">
-import { inject } from 'vue'
-const favorites = inject('favorites')
-</script>
+<script setup lang="ts"></script>
 
 <template>
   <h1>Favorites Page</h1>

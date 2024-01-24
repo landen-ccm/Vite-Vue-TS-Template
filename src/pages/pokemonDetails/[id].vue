@@ -1,29 +1,27 @@
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
 import { searchPokemon } from '../../composable/searchPokemon'
-import { onMounted, onUpdated, ref } from 'vue'
-import { Pokemon } from '../../helpers/PokeTypes'
+import { onMounted, ref } from 'vue'
+import { PokeAbility, Pokemon } from '../../helpers/PokeTypes'
 import Carousel from 'primevue/carousel'
-import router from '@/router'
+import router from '../../router' // Can't use @, needs to be path
 
-import Accordion from 'primevue/accordion';
-import AccordionTab from 'primevue/accordiontab';
-
-
+import Accordion from 'primevue/accordion'
+import AccordionTab from 'primevue/accordiontab'
 
 const route = useRoute()
 const pokemonDetails = ref<Pokemon>()
 const pokemonSprites = ref<string[]>([])
 const id = ref(route.query.pokemon as unknown as number)
 
-const abilities = ref<[ability: { name: string; url: string; }]>([])
+const abilities = ref<PokeAbility[]>([])
 const types = ref()
 
-const nextName = ref();
+const nextName = ref()
 const next = ref()
 
 const initialCall = async () => {
-  pokemonSprites.value = [];
+  pokemonSprites.value = []
   console.log('id', id.value)
   // console.log()
   pokemonDetails.value = await searchPokemon(id.value.toString())
@@ -74,25 +72,6 @@ const goBack = async () => {
   })
   await initialCall()
 }
-
-async function updateView() {
-  // pokemonDetails.value = await searchPokemon(id)
-  console.log('updated');
-  pokemonDetails.value = await searchPokemon(id.value)
-  // console.log(typeof id)
-  const pokemonSpriteObject = pokemonDetails.value?.sprites
-  for (const key in pokemonSpriteObject) {
-    if (pokemonSpriteObject[key] && key != 'other' && key != 'versions')
-      pokemonSprites.value.push(pokemonSpriteObject[key])
-  }
-  // console.log(typeof id.value)
-  next.value = await searchPokemon(String(Number(id.value) + 1))
-  nextName.value = next.value.name
-  console.log(next.value.name)
-  // router.go();
-  location.reload()
-
-}
 </script>
 
 <template>
@@ -114,7 +93,7 @@ async function updateView() {
       <Accordion :activeIndex="-1">
         <AccordionTab header="Abilities">
           <!-- <pre >{{abilities}}</pre> -->
-          <div v-for="ability in abilities" :key="ability.name">
+          <div v-for="ability in abilities" :key="ability.ability.name">
             <p>{{ ability.ability.name }}</p>
           </div>
           <!-- <Card v-for="ability in abilities" :key="ability">
@@ -129,7 +108,6 @@ async function updateView() {
         </AccordionTab>
       </Accordion>
     </div>
-
   </div>
   <router-view></router-view>
 </template>
