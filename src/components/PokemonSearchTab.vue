@@ -29,10 +29,6 @@ async function fetchPokemon() {
   isLoading.value = false
 }
 
-const sum = (a: number, b: number) => {
-  return a + b
-}
-
 onMounted(async () => {
   isLoading.value = true
   pokemonList.value = await getPokemonList(pageSize.value.val, pageNumber.value)
