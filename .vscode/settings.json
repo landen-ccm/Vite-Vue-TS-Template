@@ -1,5 +1,7 @@
 {
   "editor.formatOnSave": true,
   "typescript.preferences.autoImportFileExcludePatterns": ["vue-router"],
-  "cSpell.words": ["axios"]
+  "cSpell.words": [
+    "axios"
+  ]
 }
