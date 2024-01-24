@@ -10,5 +10,5 @@
       "@/*": ["./src/*"]
     }
   },
-  "files": ["auto-imports.d.ts", "components.d.ts"]
+  "files": ["auto-imports.d.ts", "components.d.ts", "./src/spec/component/newFile.ts"]
 }
