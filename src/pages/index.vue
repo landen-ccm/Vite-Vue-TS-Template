@@ -1,81 +1,126 @@
+<script setup lang="ts">
+import Button from 'primevue/button'
+import Dropdown from 'primevue/dropdown'
+import SearchBox from '@/components/search/SearchBox.vue'
+
+import { ref } from 'vue'
+
+import 'primeicons/primeicons.css'
+import { getListOfPokemon, searchByName } from '@/helpers/apiCalls'
+import type { PokeCard, PokemonInfo } from '@/helpers/shared'
+import axios from 'axios'
+import router from '@/router'
+
+const selectedNum = ref<string | number>(25)
+const pageSizes = [25, 50, 100, 'all']
+const pokemonList = ref<PokeCard[]>([])
+
+//sumanth
+const currentPageSize = ref<'all' | number>(25)
+const totalPages = ref<number>(0)
+const itemsPerPage = ref<number>(currentPageSize.value === 'all' ? 100000 : currentPageSize.value)
+
+totalPages.value = Math.ceil(1302 / itemsPerPage.value)
+
+watch(selectedNum, (newValue, oldValue) => {
+  itemsPerPage.value = newValue === 'all' ? 10000 : Number(newValue)
+  totalPages.value = Math.ceil(1302 / itemsPerPage.value)
+  console.log('TotalPages', totalPages.value)
+  fetchCards()
+})
+
+const navigateToFavorites = () => {
+  router.push('/favoritesPage')
+}
+const currentPage = ref(0)
+
+const fetchCards = async (newPage?: number) => {
+  try {
+    if (newPage !== undefined) {
+      currentPage.value = newPage
+    }
+    const temp = await getListOfPokemon(itemsPerPage.value, currentPage.value)!
+    if (temp === null || typeof temp?.results === 'undefined') {
+      console.log("Couldn't fetch, dying quietly...")
+      return
+    }
+    pokemonList.value.length = 0
+    for (const poke of temp.results) {
+      const { data } = await axios.get<PokemonInfo>(poke.url)
+
+      pokemonList.value.push({
+        name: data.name,
+        imageUrl: data.sprites.front_default,
+        id: data.id
+      })
+    }
+  } catch (error) {
+    console.log(error)
+  }
+}
+
+async function onSubmit(name: string) {
+  try {
+    const data = await searchByName(name)
+    console.log(data)
+    if (!data) {
+      alert(`Couldn't find '${name}'`)
+    } else {
+      pokemonList.value.length = 0
+      pokemonList.value.push({
+        name: data.name,
+        imageUrl: data.sprites.front_default,
+        id: data.id
+      })
+    }
+  } catch (error) {
+    alert(`Couldn't find '${name}'`)
+  }
+}
+
+onMounted(() => fetchCards())
+</script>
+
 <template>
-  <HelloWorld msg="Vite Vue TS" />
-
-  <WelcomeItem>
-    <template #icon>
-      <DocumentationIcon />
-    </template>
-    <template #heading>Documentation</template>
-
-    Vue's
-    <a href="https://vuejs.org/" target="_blank" rel="noopener">official documentation</a>
-    provides you with all information you need to get started.
-  </WelcomeItem>
-
-  <WelcomeItem>
-    <template #icon>
-      <ToolingIcon />
-    </template>
-    <template #heading>Tooling</template>
-
-    This project is served and bundled with
-    <a href="https://vitejs.dev/guide/features.html" target="_blank" rel="noopener">Vite</a>. The
-    recommended IDE setup is
-    <a href="https://code.visualstudio.com/" target="_blank" rel="noopener">VSCode</a> +
-    <a href="https://github.com/johnsoncodehk/volar" target="_blank" rel="noopener">Volar</a>. If
-    you need to test your components and web pages, check out
-    <a href="https://www.cypress.io/" target="_blank" rel="noopener">Cypress</a> and
-    <a href="https://on.cypress.io/component" target="_blank" rel="noopener"
-      >Cypress Component Testing</a
-    >.
-
-    <br />
-
-    More instructions are available in <code>README.md</code>.
-  </WelcomeItem>
-
-  <WelcomeItem>
-    <template #icon>
-      <EcosystemIcon />
-    </template>
-    <template #heading>Ecosystem</template>
-
-    Get official tools and libraries for your project:
-    <a href="https://pinia.vuejs.org/" target="_blank" rel="noopener">Pinia</a>,
-    <a href="https://router.vuejs.org/" target="_blank" rel="noopener">Vue Router</a>,
-    <a href="https://test-utils.vuejs.org/" target="_blank" rel="noopener">Vue Test Utils</a>, and
-    <a href="https://github.com/vuejs/devtools" target="_blank" rel="noopener">Vue Dev Tools</a>. If
-    you need more resources, we suggest paying
-    <a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">Awesome Vue</a>
-    a visit.
-  </WelcomeItem>
-
-  <WelcomeItem>
-    <template #icon>
-      <CommunityIcon />
-    </template>
-    <template #heading>Community</template>
-
-    Got stuck? Ask your question on
-    <a href="https://chat.vuejs.org" target="_blank" rel="noopener">Vue Land</a>, our official
-    Discord server, or
-    <a href="https://stackoverflow.com/questions/tagged/vue.js" target="_blank" rel="noopener"
-      >StackOverflow</a
-    >. You should also subscribe to
-    <a href="https://news.vuejs.org" target="_blank" rel="noopener">our mailing list</a> and follow
-    the official
-    <a href="https://twitter.com/vuejs" target="_blank" rel="noopener">@vuejs</a>
-    twitter account for latest news in the Vue world.
-  </WelcomeItem>
-
-  <WelcomeItem>
-    <template #icon>
-      <SupportIcon />
-    </template>
-    <template #heading>Support Vue</template>
-
-    As an independent project, Vue relies on community backing for its sustainability. You can help
-    us by
-    <a href="https://vuejs.org/sponsor/" target="_blank" rel="noopener">becoming a sponsor</a>.
-  </WelcomeItem>
+  <Button @click="navigateToFavorites">Favorites</Button>
+  <div class="card-container main-box">
+    <search-box @submit="onSubmit" class="card"></search-box>
+    <div id="poke-list" class="poke-list">
+      <PokemonCard
+        v-for="poke in pokemonList"
+        :key="poke.id"
+        :id="poke.id"
+        :name="poke.name"
+        :image-url="poke.imageUrl"
+      />
+    </div>
+    <div class="dropdown p-card card flex">
+      <Dropdown v-model="selectedNum" :options="pageSizes" />
+      <Button
+        icon="pi pi-arrow-left"
+        aria-label="Submit"
+        @click="fetchCards(currentPage - 1)"
+        :disabled="currentPage === 0"
+      />
+      <Button
+        icon="pi pi-arrow-right"
+        aria-label="Submit"
+        @click="fetchCards(currentPage + 1)"
+        :disabled="currentPage === totalPages - 1"
+      />
+    </div>
+  </div>
 </template>
+
+<style scoped>
+.main-box {
+  display: flex;
+  flex-direction: column;
+}
+
+.poke-list {
+  display: flex;
+  flex-flow: row;
+  flex-wrap: wrap;
+}
+</style>
