@@ -6,8 +6,7 @@ export const sizeOption = [
   { name: '100', val: 100 },
   { name: 'ALL', val: MAX_POKEMON }
 ]
-
-export const pageSize = ref(sizeOption[0])
+export const pageSize = ref({ name: '25', val: 25 })
 export const pageNumber = ref(1)
 export const FINAL_POKEMON_ID = 10277
 export const POKEMON_SKIP_AT_ID = 1025

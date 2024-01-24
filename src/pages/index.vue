@@ -9,6 +9,7 @@ const favorites = ref(inject<Set<number>>('favorites', new Set()))
 </script>
 
 <template>
+  <h1>Pokemon App</h1>
   <TabView>
     <TabPanel header="Search">
       <PokemonSearchTab :favorites="favorites" />

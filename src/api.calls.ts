@@ -29,16 +29,16 @@ type PokemonAbility = {
   slot: number
 }
 
-export type EnhancedPokemon = Pokemon & { abilities: PokemonAbility[]; pokemonTypes: PokemonType[] }
+export type EnhancedPokemon = Pokemon & { abilities: PokemonAbility[]; types: PokemonType[] }
 
 type PokemonBatchResponse = {
   name: string
   url: string
 }
-const api = 'https://pokeapi.co/api/v2/pokemon/'
+export const api = 'https://pokeapi.co/api/v2/pokemon/'
 
 // search for a get a single pokemon
-export async function getPokemon(searchQuery: string): Promise<Pokemon[]> {
+export async function getPokemon(searchQuery: string): Promise<EnhancedPokemon[]> {
   try {
     const res = await axios.get(api + searchQuery)
     const pokemon = {
@@ -46,7 +46,7 @@ export async function getPokemon(searchQuery: string): Promise<Pokemon[]> {
       id: res.data.id,
       sprites: res.data.sprites,
       abilities: res.data.abilities,
-      pokemonTypes: res.data.types
+      types: res.data.types
     }
     return [pokemon]
   } catch {

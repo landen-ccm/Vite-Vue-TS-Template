@@ -12,6 +12,9 @@ const router = useRouter()
 
 const poke = ref<EnhancedPokemon | undefined>()
 const numberId = ref(0)
+const sum = (a: number, b: number) => {
+  return a + b
+}
 
 const images = computed(() => {
   const imageKeys: (keyof Pokemon['sprites'])[] = [
@@ -31,19 +34,31 @@ const images = computed(() => {
     : []
 })
 
+const pokemonId = computed(() => {
+  if (typeof route.params.id === 'string') {
+    return parseInt(route.params.id)
+  } else {
+    return parseInt(route.params.id[0])
+  }
+})
+
 const nextId = computed(() => {
-  const id = parseInt(route.params.id as string)
-  return id === POKEMON_SKIP_AT_ID ? POKEMON_SKIP_TO_ID : id === FINAL_POKEMON_ID ? 1 : id + 1
+  return pokemonId.value === POKEMON_SKIP_AT_ID
+    ? POKEMON_SKIP_TO_ID
+    : pokemonId.value === FINAL_POKEMON_ID
+      ? 1
+      : pokemonId.value + 1
 })
 const prevId = computed(() => {
-  const id = parseInt(route.params.id as string)
-  return id === POKEMON_SKIP_TO_ID ? POKEMON_SKIP_AT_ID : id === 1 ? FINAL_POKEMON_ID : id - 1
+  return pokemonId.value === POKEMON_SKIP_TO_ID
+    ? POKEMON_SKIP_AT_ID
+    : pokemonId.value === 1
+      ? FINAL_POKEMON_ID
+      : pokemonId.value - 1
 })
 
 const handleClick = (typeOfClick: string) => {
-  const id = route.params.id as string
-  numberId.value = parseInt(id)
-
+  numberId.value = pokemonId.value
   if (typeOfClick === 'Next') {
     if (numberId.value === POKEMON_SKIP_AT_ID) {
       numberId.value = POKEMON_SKIP_TO_ID // ids skip from 1025 to 10001 so this handles that case
@@ -74,7 +89,7 @@ onMounted(async () => {
     if (typeof id === 'string') {
       const response = await getPokemon(id)
       console.log(response)
-      poke.value = response[0] as EnhancedPokemon
+      poke.value = response[0]
       console.log(poke.value.abilities[0].ability.name)
     }
   } catch (error) {
@@ -107,7 +122,7 @@ onMounted(async () => {
       <div class="panel-content">
         <div class="panel-content-types-abilities">
           <h2>Types:</h2>
-          <p v-for="pokemonType in poke.pokemonTypes" :key="pokemonType.slot">
+          <p v-for="pokemonType in poke.types" :key="pokemonType.slot">
             {{ pokemonType.type.name.toUpperCase() }}
           </p>
         </div>

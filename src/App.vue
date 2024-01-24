@@ -49,6 +49,7 @@ provide('addFavorite', addToFavorites)
 provide('removeFavorite', removeFromFavorites)
 provide('clearFavorites', clearFavorites)
 provide('addAllToFavorites', addAllToFavorites)
+
 </script>
 
 <template>

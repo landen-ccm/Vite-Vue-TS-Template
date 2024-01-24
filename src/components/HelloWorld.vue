@@ -1,7 +1,16 @@
 <script setup lang="ts">
+import type { Pokemon } from '../api.calls'
 defineProps<{
   msg: string
+  pokemon: Pokemon
 }>()
+const sum = (a: number, b: number) => {
+  return a + b
+}
+
+const mul = (a: number, b: number) => {
+  return a * b
+}
 </script>
 
 <template>

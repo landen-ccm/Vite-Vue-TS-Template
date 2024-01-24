@@ -8,6 +8,9 @@ import Button from 'primevue/button'
 const props = defineProps<{
   favorites: Set<number>
 }>()
+const sum = (a: number, b: number) => {
+  return a + b
+}
 
 const clearFavorites = inject<() => void>('clearFavorites', () => {})
 

@@ -16,12 +16,15 @@ const removeFromFavorites = inject<(a: number) => void>('removeFavorite', () => 
 function viewDetails() {
   const pokemonDetailName = '/pokemon/[id]'
   router.push({ name: pokemonDetailName, params: { id: props.pokemon.id } })
+  return 0
 }
 </script>
 <template>
   <div class="pokemon-card">
     <div class="info">
-      <h1>#{{ props.pokemon.id }} - {{ props.pokemon.name.toUpperCase() }}</h1>
+      <h1 data-test="pokemon-name">
+        #{{ props.pokemon.id }} - {{ props.pokemon.name.toUpperCase() }}
+      </h1>
       <img
         :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${props.pokemon.id}.png`"
       />
@@ -39,7 +42,7 @@ function viewDetails() {
         v-tooltip.top="'Add to Favorites'"
         @click="addToFavorites(props.pokemon.id)"
       ></i>
-      <Button @click="viewDetails">View Details</Button>
+      <Button @click="viewDetails" data-test="detail-btn">View Details</Button>
     </div>
   </div>
 </template>
