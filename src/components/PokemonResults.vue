@@ -16,6 +16,7 @@ const hasError = computed(() => props.pokemonList.length === 0)
 <template>
   <div class="content" v-if="!hasError">
     <PokemonCard
+      class="pcard"
       v-for="card in props.pokemonList"
       :key="card.id"
       :pokemon="card"

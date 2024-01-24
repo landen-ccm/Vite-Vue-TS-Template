@@ -30,10 +30,13 @@ onMounted(async () => {
 </script>
 
 <template>
-  <PokemonResults
-    :pokemonList="favoritePokemon"
-    :favorites="props.favorites"
-    :errorMessage="'No favorited Pokemon yet'"
-  />
-  <Button v-if="favorites.size > 0" @click="clearFavorites">Clear All</Button>
+  <div>
+    <PokemonResults
+      class="pokemon-results"
+      :pokemonList="favoritePokemon"
+      :favorites="props.favorites"
+      :errorMessage="'No favorited Pokemon yet'"
+    />
+    <Button v-if="favorites.size > 0" @click="clearFavorites">Clear All</Button>
+  </div>
 </template>
