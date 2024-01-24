@@ -21,7 +21,7 @@ function viewDetails() {
 <template>
   <div class="pokemon-card">
     <div class="info">
-      <h1>#{{ props.pokemon.id }} - {{ props.pokemon.name.toUpperCase() }}</h1>
+      <h1 data-test="header">#{{ props.pokemon.id }} - {{ props.pokemon.name.toUpperCase() }}</h1>
       <img
         :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${props.pokemon.id}.png`"
       />

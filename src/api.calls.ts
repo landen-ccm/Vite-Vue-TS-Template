@@ -29,24 +29,25 @@ type PokemonAbility = {
   slot: number
 }
 
-export type EnhancedPokemon = Pokemon & { abilities: PokemonAbility[]; pokemonTypes: PokemonType[] }
+export type EnhancedPokemon = Pokemon & { abilities: PokemonAbility[]; types: PokemonType[] }
 
 type PokemonBatchResponse = {
   name: string
   url: string
 }
-const api = 'https://pokeapi.co/api/v2/pokemon/'
+export const API_URL = 'https://pokeapi.co/api/v2/pokemon/'
+export const FAVORITES_KEY = 'pokemonFavorites'
 
 // search for a get a single pokemon
 export async function getPokemon(searchQuery: string): Promise<Pokemon[]> {
   try {
-    const res = await axios.get(api + searchQuery)
+    const res = await axios.get(API_URL + searchQuery)
     const pokemon = {
       name: res.data.name,
       id: res.data.id,
       sprites: res.data.sprites,
       abilities: res.data.abilities,
-      pokemonTypes: res.data.types
+      types: res.data.types
     }
     return [pokemon]
   } catch {
@@ -57,7 +58,7 @@ export async function getPokemon(searchQuery: string): Promise<Pokemon[]> {
 export async function getPokemonList(size: number, page: number): Promise<Pokemon[]> {
   try {
     const paginationQuery = '?limit=' + size + '&offset=' + (page - 1) * size
-    const res = await axios.get(api + paginationQuery)
+    const res = await axios.get(API_URL + paginationQuery)
     return res.data.results.map((item: PokemonBatchResponse) => {
       const splitUrl = item.url.split('/')
       return { name: item.name, id: parseInt(splitUrl[splitUrl.length - 2]) }
@@ -67,7 +68,7 @@ export async function getPokemonList(size: number, page: number): Promise<Pokemo
   }
 }
 export const getFavorites = (): Set<number> => {
-  const favorites = localStorage.getItem('pokemonFavorites')
+  const favorites = localStorage.getItem(FAVORITES_KEY)
   if (favorites === null) {
     return new Set([])
   } else {
@@ -76,5 +77,5 @@ export const getFavorites = (): Set<number> => {
 }
 
 export const setFavorites = (pokemonFavorites: Set<number>) => {
-  localStorage.setItem('pokemonFavorites', JSON.stringify([...pokemonFavorites]))
+  localStorage.setItem(FAVORITES_KEY, JSON.stringify([...pokemonFavorites]))
 }

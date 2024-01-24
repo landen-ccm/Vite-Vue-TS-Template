@@ -73,9 +73,7 @@ onMounted(async () => {
     const id = route.params.id
     if (typeof id === 'string') {
       const response = await getPokemon(id)
-      console.log(response)
       poke.value = response[0] as EnhancedPokemon
-      console.log(poke.value.abilities[0].ability.name)
     }
   } catch (error) {
     console.log(error)
@@ -107,7 +105,7 @@ onMounted(async () => {
       <div class="panel-content">
         <div class="panel-content-types-abilities">
           <h2>Types:</h2>
-          <p v-for="pokemonType in poke.pokemonTypes" :key="pokemonType.slot">
+          <p v-for="pokemonType in poke.types" :key="pokemonType.slot">
             {{ pokemonType.type.name.toUpperCase() }}
           </p>
         </div>

@@ -12,7 +12,7 @@ const props = defineProps<{
   favorites: Set<number>
 }>()
 
-const isLoading = ref(false)
+const isLoading = ref(true)
 
 const searchQuery = ref('')
 const pokemonList = ref<Pokemon[]>([])
@@ -30,7 +30,6 @@ async function fetchPokemon() {
 }
 
 onMounted(async () => {
-  isLoading.value = true
   pokemonList.value = await getPokemonList(pageSize.value.val, pageNumber.value)
   isLoading.value = false
 })
@@ -58,7 +57,7 @@ onMounted(async () => {
     </Dropdown>
   </div>
 
-  <LoadingSpinner v-if="isLoading" />
+  <LoadingSpinner data-test="loading" v-if="isLoading" />
   <PokemonResults v-else :pokemonList="pokemonList" :favorites="props.favorites" />
 
   <div class="pagination-container">

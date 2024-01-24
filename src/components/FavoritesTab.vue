@@ -35,5 +35,7 @@ onMounted(async () => {
     :favorites="props.favorites"
     :errorMessage="'No favorited Pokemon yet'"
   />
-  <Button v-if="favorites.size > 0" @click="clearFavorites">Clear All</Button>
+  <Button v-if="favorites.size > 0" data-test="clearButton" @click="clearFavorites"
+    >Clear All</Button
+  >
 </template>

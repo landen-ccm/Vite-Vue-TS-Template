@@ -11,7 +11,7 @@ withDefaults(
 
 <template>
   <div class="loading-indicator">
-    <span v-if="text">{{ text }}</span>
+    <span v-if="text" data-test="text">{{ text }}</span>
     <div class="spinner"></div>
   </div>
 </template>
