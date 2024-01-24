@@ -2,7 +2,7 @@
 import { onUpdated } from 'vue'
 import { getDetails } from '@/helpers/homepageHelpers'
 import { useRoute, useRouter } from 'vue-router'
-import type { DetailedPokemon, PokeType } from '../helpers/types'
+import type { DetailedPokemon } from '../helpers/types'
 import Card from 'primevue/card'
 import Carousel from 'primevue/carousel'
 import Image from 'primevue/image'
@@ -42,6 +42,26 @@ const sprites = computed(() => {
 
 const showDetails = () => {
   isshowDetails.value = !isshowDetails.value
+}
+
+const prevButtonHandler = () => {
+  if (+pokeId === 1) {
+    router.push({ name: 'details', query: { id: 10277 } })
+  } else if (+pokeId === 10001) {
+    router.push({ name: 'details', query: { id: 1025 } })
+  } else {
+    router.push({ name: 'details', query: { id: +pokeId - 1 } })
+  }
+}
+
+const nextButtonHandler = () => {
+  if (+pokeId === 10277) {
+    router.push({ name: 'details', query: { id: 1 } })
+  } else if (+pokeId === 1025) {
+    router.push({ name: 'details', query: { id: 10001 } })
+  } else {
+    router.push({ name: 'details', query: { id: +pokeId + 1 } })
+  }
 }
 
 onUpdated(() => {
@@ -97,12 +117,8 @@ onMounted(async () => {
                 </ul>
               </div>
               <div>
-                <Button @click="router.push({ name: 'details', query: { id: +pokeId - 1 } })"
-                  >Prev</Button
-                >
-                <Button @click="router.push({ name: 'details', query: { id: +pokeId + 1 } })"
-                  >Next</Button
-                >
+                <Button @click="prevButtonHandler">Prev</Button>
+                <Button @click="nextButtonHandler">Next</Button>
                 <Button @click="router.push({ name: 'home' })" style="width: 5.5em"> Home </Button>
               </div>
             </template>

@@ -15,7 +15,6 @@ import {
   favorites
 } from './variables'
 import { searchButtonHandler, getData } from '@/helpers/homepageHelpers'
-import { capitalizeFirstLetter } from '../helpers/functions'
 import { saveFavorites } from '@/helpers/storeFavorite'
 
 const router = useRouter()
@@ -33,7 +32,7 @@ const updateDisplayed = async () => {
 
 const currentPageSize = computed(() => {
   const num: number = +pageSize.value
-  console.log(num)
+  // console.log(num)
   if (isNaN(num)) {
     return 100000 // This is bad, this should never be a hard coded value!
   } else {
@@ -47,7 +46,7 @@ const movePage = (direction: 1 | -1) => {
 }
 
 const addAllToFavorites = () => {
-  console.log(displayedPokemon.value)
+  // console.log(displayedPokemon.value)
   displayedPokemon.value.forEach((pokemon) => {
     favorites.value[pokemon.id] = pokemon
   })

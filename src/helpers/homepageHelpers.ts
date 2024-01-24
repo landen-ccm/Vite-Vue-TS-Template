@@ -6,6 +6,7 @@ export const getData = async (limit: number | null, page: number = 1) => {
   try {
     if (limit != null) {
       const response = await axios.get(`${POKEMON_URL}/?limit=${limit}&offset=${page * +limit}`)
+      console.log(response.data)
       return response.data
     } else {
       const response = await axios.get(`${POKEMON_URL}`)
@@ -30,9 +31,16 @@ export const searchButtonHandler = async (searchParam: string) => {
           url: searchRes.sprites.front_default
         }
       ]
+      console.log(displayedPokemon.value)
     }
   } catch (error) {
-    alert('No pokemon found with that name. Try again!')
+    displayedPokemon.value = [
+      {
+        name: 'No Pokemon with this name was found',
+        id: -1,
+        url: 'Try Again'
+      }
+    ]
   }
 }
 

@@ -35,8 +35,10 @@ const props = defineProps<Pokemon>()
 </script>
 
 <template>
-  <Card>
-    <template #title> {{ capitalizeFirstLetter(props.name) }}</template>
+  <Card data-test="todo">
+    <template #title>
+      <div>{{ capitalizeFirstLetter(props.name) }}</div>
+    </template>
     <template #content>
       <img :src="props.url" :alt="props.name" />
       <div class="button-section">
