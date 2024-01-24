@@ -1,73 +1,59 @@
-<template>
-  <header>
-    <div class="wrapper">
-      <TheNavBar />
-    </div>
-  </header>
+<script setup lang="ts">
+import Toast from 'primevue/toast'
+import { useToast } from 'primevue/usetoast'
+import { useRoute } from 'vue-router'
+import { type Pokemon, setFavorites, getFavorites } from './api.calls'
 
-  <RouterView />
+const toast = useToast()
+const route = useRoute()
+const favorites = ref<Set<number>>(getFavorites())
+
+onMounted(() => {})
+function addToFavorites(id: number) {
+  favorites.value.add(id)
+  setFavorites(favorites.value)
+  toast.add({
+    severity: 'success',
+    detail: 'Pokemon added to favorites!',
+    life: 3000
+  })
+}
+
+function removeFromFavorites(id: number) {
+  favorites.value.delete(id)
+  setFavorites(favorites.value)
+  toast.add({
+    severity: 'error',
+    detail: 'Pokemon removed from favorites!',
+    life: 3000
+  })
+}
+
+function clearFavorites() {
+  favorites.value.clear()
+  setFavorites(favorites.value)
+  toast.add({
+    severity: 'error',
+    detail: 'Favorites cleared!',
+    life: 3000
+  })
+}
+
+function addAllToFavorites(pokemonArr: Pokemon[]) {
+  pokemonArr.forEach((item) => favorites.value.add(item.id))
+  setFavorites(favorites.value)
+}
+
+provide('favorites', favorites)
+provide('addFavorite', addToFavorites)
+provide('removeFavorite', removeFromFavorites)
+provide('clearFavorites', clearFavorites)
+provide('addAllToFavorites', addAllToFavorites)
+</script>
+
+<template>
+  <Toast />
+  <RouterView :key="route.fullPath" />
 </template>
 
-<style lang="scss">
-header {
-  line-height: 1.5;
-  max-height: 100vh;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-nav {
-  width: 100%;
-  font-size: 12px;
-  text-align: center;
-  margin-bottom: 1rem;
-}
-
-nav a.router-link-exact-active {
-  color: var(--color-text);
-}
-
-nav a.router-link-exact-active:hover {
-  background-color: transparent;
-}
-
-nav a {
-  display: inline-block;
-  padding: 0 1rem;
-  border-left: 1px solid var(--color-border);
-}
-
-nav a:first-of-type {
-  border: 0;
-}
-
-@media (min-width: 2000px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  nav {
-    text-align: left;
-    margin-left: -1rem;
-    font-size: 1rem;
-
-    padding: 1rem 0;
-    margin-top: 1rem;
-  }
-}
-</style>
+<style lang="scss"></style>
