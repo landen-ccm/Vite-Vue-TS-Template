@@ -1,3 +1,3 @@
 <template>
-  <h1>Practice Playground</h1>
+  <RouterView />
 </template>

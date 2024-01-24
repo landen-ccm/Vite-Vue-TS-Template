@@ -28,7 +28,7 @@ export type PokeListElement = {
 export const getListOfPokemon = async (count: number, page = 0): Promise<PokeList | null> => {
   try {
     const { data } = await axios.get<PokeList>(
-      `https://pokeapi.co/api/v2/pokemon?limit=${count}&offset=${page}`
+      `https://pokeapi.co/api/v2/pokemon?limit=${count}&offset=${page * count}`
     )
     return data
   } catch (error) {
