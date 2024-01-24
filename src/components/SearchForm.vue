@@ -32,13 +32,13 @@ const offset = computed(() => {
 })
 
 const handleNext = async () => {
-  pageNumber.value += 1
+  pageNumber.value = pageNumber.value + 1
   const data = await getPokemon(selectedPagination.value, pageNumber.value)
   pokemonData.value = data.results
 }
 
 const handlePrevious = async () => {
-  pageNumber.value -= 1
+  pageNumber.value = pageNumber.value - 1
   const data = await getPokemon(selectedPagination.value, pageNumber.value)
   pokemonData.value = data.results
 }

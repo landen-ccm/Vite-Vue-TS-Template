@@ -13,9 +13,11 @@ export const getPokemon = async (selectedPagination:string, pageNumber:number) =
     } else {
         pagination = parseInt(selectedPagination)
     }
-    const { data } = await axios.get(
-        `https://pokeapi.co/api/v2/pokemon/?limit=${pagination}&offset=${(pageNumber.value - 1) * pagination}`
+    const offset = Number((pageNumber- 1) * pagination)
+    const {data} = await axios.get(
+        `https://pokeapi.co/api/v2/pokemon/?limit=${pagination}&offset=${offset}`
     )
+    console.log(data)
     return data
 }
 
