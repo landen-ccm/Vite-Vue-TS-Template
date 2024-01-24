@@ -48,6 +48,7 @@ export async function getPokemon(searchQuery: string): Promise<Pokemon[]> {
       abilities: res.data.abilities,
       pokemonTypes: res.data.types
     }
+    console.log(pokemon)
     return [pokemon]
   } catch {
     return []
