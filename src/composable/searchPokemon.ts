@@ -9,6 +9,8 @@ export async function searchPokemon(name: string): Promise<Pokemon | null> {
   }
   try {
     const { data: data } = await axios.get<Pokemon>(`${BASE_URL}${name}`)
+    console.log('searchPokemon')
+    console.log(data)
     return data
   } catch (error) {
     // error: Error
