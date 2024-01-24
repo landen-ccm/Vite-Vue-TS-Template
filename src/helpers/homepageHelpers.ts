@@ -13,7 +13,7 @@ export const getData = async (limit: number | null, page: number = 1) => {
       return response.data
     }
   } catch (error) {
-    alert('No pokemon were found')
+    return { count: 0, next: null, prev: null, results: [] }
     console.error(error)
   }
 }
