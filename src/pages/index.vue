@@ -174,7 +174,7 @@ onMounted(async () => {
         <p v-else>No Pokémon data available.</p>
       </div>
     </div>
-    <div v-else>
+    <div id="test-favorites" v-else>
       <Button @click="clearLocalStorage">Remove all favorites</Button>
       <SearchBar @submit="submit"></SearchBar>
       <Dropdown v-model="showCount" :options="displayCountOptions" optionLabel="text" optionValue="value"></Dropdown>
@@ -199,8 +199,8 @@ onMounted(async () => {
         </li>
       </ul>
     </div>
-    <Button class="page-button" @click="backButtonHandler" :disabled="disableBack">Back</Button>
-    <Button class="page-button" @click="forwardButtonHandler" :disabled="disableForward">Forwards</Button>
+    <Button data-test="back-button" class="page-button" @click="backButtonHandler" :disabled="disableBack">Back</Button>
+    <Button data-test="forward-button" class="page-button" @click="forwardButtonHandler" :disabled="disableForward">Forwards</Button>
   </div>
   <footer>{{ pageNumber + 1 }}</footer>
 </template>

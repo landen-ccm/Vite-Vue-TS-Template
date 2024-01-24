@@ -1,5 +1,4 @@
 <script setup lang="ts"></script>
-
 <template>
   <h1>Favorites Page</h1>
   <!-- <div class="card-container">
