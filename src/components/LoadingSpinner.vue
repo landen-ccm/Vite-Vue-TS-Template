@@ -1,7 +1,7 @@
 <script setup lang="ts">
 withDefaults(
   defineProps<{
-    text: String
+    text?: String
   }>(),
   {
     text: () => 'Loading'
@@ -22,6 +22,7 @@ withDefaults(
   justify-content: center;
   align-items: center;
   height: 100%;
+  margin: 25px 0px;
 
   span {
     margin-right: 0.5rem;
