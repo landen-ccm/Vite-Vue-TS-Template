@@ -75,24 +75,24 @@ const goBack = async () => {
   await initialCall()
 }
 
-async function updateView() {
-  // pokemonDetails.value = await searchPokemon(id)
-  console.log('updated');
-  pokemonDetails.value = await searchPokemon(id.value)
-  // console.log(typeof id)
-  const pokemonSpriteObject = pokemonDetails.value?.sprites
-  for (const key in pokemonSpriteObject) {
-    if (pokemonSpriteObject[key] && key != 'other' && key != 'versions')
-      pokemonSprites.value.push(pokemonSpriteObject[key])
-  }
-  // console.log(typeof id.value)
-  next.value = await searchPokemon(String(Number(id.value) + 1))
-  nextName.value = next.value.name
-  console.log(next.value.name)
-  // router.go();
-  location.reload()
+// async function updateView() {
+//   // pokemonDetails.value = await searchPokemon(id)
+//   console.log('updated');
+//   pokemonDetails.value = await searchPokemon(id.value)
+//   // console.log(typeof id)
+//   const pokemonSpriteObject = pokemonDetails.value?.sprites
+//   for (const key in pokemonSpriteObject) {
+//     if (pokemonSpriteObject[key] && key != 'other' && key != 'versions')
+//       pokemonSprites.value.push(pokemonSpriteObject[key])
+//   }
+//   // console.log(typeof id.value)
+//   next.value = await searchPokemon(String(Number(id.value) + 1))
+//   nextName.value = next.value.name
+//   console.log(next.value.name)
+//   // router.go();
+//   location.reload()
 
-}
+// }
 </script>
 
 <template>

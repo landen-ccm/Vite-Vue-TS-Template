@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { inject } from 'vue'
 const favorites = inject('favorites')
+
+console.log(favorites)
 </script>
 
 <template>

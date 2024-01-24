@@ -22,6 +22,7 @@ async function search() {
   <span class="search-span p-input-icon-right">
     <i class="pi pi-search"></i>
     <InputText
+      data-test="input-tag"
       type="text"
       class="search-box"
       @keypress.enter="search"
