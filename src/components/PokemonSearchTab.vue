@@ -12,21 +12,27 @@ const props = defineProps<{
   favorites: Set<number>
 }>()
 
+const isLoading = ref(false)
+
 const searchQuery = ref('')
 const pokemonList = ref<Pokemon[]>([])
 const addAllToFavorites = inject<(pokemonArr: Pokemon[]) => void>('addAllToFavorites', () => {})
 watch([pageNumber, pageSize], async () => await fetchPokemon())
 
 async function fetchPokemon() {
+  isLoading.value = true
   if (searchQuery.value == '') {
     pokemonList.value = await getPokemonList(pageSize.value.val, pageNumber.value)
   } else {
     pokemonList.value = await getPokemon(searchQuery.value)
   }
+  isLoading.value = false
 }
 
 onMounted(async () => {
+  isLoading.value = true
   pokemonList.value = await getPokemonList(pageSize.value.val, pageNumber.value)
+  isLoading.value = false
 })
 </script>
 
@@ -52,7 +58,8 @@ onMounted(async () => {
     </Dropdown>
   </div>
 
-  <PokemonResults :pokemonList="pokemonList" :favorites="props.favorites" />
+  <LoadingSpinner v-if="isLoading" />
+  <PokemonResults v-else :pokemonList="pokemonList" :favorites="props.favorites" />
 
   <div class="pagination-container">
     <Button :disabled="pageNumber === 1 || pokemonList.length <= 1" @click="pageNumber--"
