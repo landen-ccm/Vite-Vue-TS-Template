@@ -31,11 +31,25 @@ describe('API calls', () => {
       expect(pokemon).toStrictEqual([])
     })
   })
-  // describe('getPokemonList', () => {
-  //   test('makes a GET request to fetch pokemon', async () => {
-
-  //   })
-  // })
+  describe('getPokemonList', () => {
+    test('makes a GET request to fetch pokemon list', async () => {
+      const pageSize = 1
+      const pageNumber = 1
+      const mockedPokemonList = { name: 'bulbasaur', url: 'https://pokeapi.co/api/v2/pokemon/1/' }
+      axios.get.mockResolvedValue({ data: { results: [mockedPokemonList] } })
+      const pokemonList = await getPokemonList(pageSize, pageNumber)
+      expect(axios.get).toBeCalledWith(api + '?limit=' + pageSize + '&offset=0')
+      expect(pokemonList).toStrictEqual([{ name: 'bulbasaur', id: 1 }])
+    })
+    test('makes a GET request to fetch pokemon list with invalid parameters', async () => {
+      const pageSize = -1
+      const pageNumber = -1
+      axios.get.mockResolvedValue([])
+      const pokemonList = await getPokemonList(pageSize, pageNumber)
+      expect(axios.get).toBeCalledWith(api + '?limit=' + pageSize + '&offset=2')
+      expect(pokemonList).toStrictEqual([])
+    })
+  })
 })
 
 describe('Local Storage Calls', () => {
