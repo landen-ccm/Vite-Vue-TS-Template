@@ -12,10 +12,6 @@ const router = useRouter()
 
 const poke = ref<EnhancedPokemon | undefined>()
 const numberId = ref(0)
-const sum = (a: number, b: number) => {
-  return a + b
-}
-
 const images = computed(() => {
   const imageKeys: (keyof Pokemon['sprites'])[] = [
     'front_default',
@@ -67,6 +63,7 @@ const handleClick = (typeOfClick: string) => {
     } else {
       numberId.value++
     }
+    return 0
   }
 
   if (typeOfClick === 'Prev') {
@@ -77,10 +74,10 @@ const handleClick = (typeOfClick: string) => {
     } else {
       numberId.value--
     }
+    return -1
   }
-
   const pokemonDetailName = '/pokemon/[id]'
-  router.replace({ name: pokemonDetailName, params: { id: numberId.value } })
+  router.push({ name: pokemonDetailName, params: { id: numberId.value } })
 }
 
 onMounted(async () => {
@@ -88,9 +85,7 @@ onMounted(async () => {
     const id = route.params.id
     if (typeof id === 'string') {
       const response = await getPokemon(id)
-      console.log(response)
       poke.value = response[0]
-      console.log(poke.value.abilities[0].ability.name)
     }
   } catch (error) {
     console.log(error)
@@ -100,7 +95,7 @@ onMounted(async () => {
 
 <template>
   <div v-if="poke" class="container">
-    <h1>#{{ poke.id }} - {{ poke.name.toUpperCase() }}</h1>
+    <h1 data-test="name-and-id">#{{ poke.id }} - {{ poke.name.toUpperCase() }}</h1>
     <Carousel
       class="carousel"
       :value="images"
@@ -134,10 +129,10 @@ onMounted(async () => {
         </div>
       </div>
     </Panel>
-    <div class="btn-div">
-      <Button @click="handleClick('Prev')">#{{ prevId }}</Button>
-      <Button @click="handleClick('Next')">#{{ nextId }}</Button>
-    </div>
+  </div>
+  <div class="btn-div">
+    <Button @click="handleClick('Prev')" data-test="prev-btn">#{{ prevId }}</Button>
+    <Button @click="handleClick('Next')" data-test="next-btn">#{{ nextId }}</Button>
   </div>
 </template>
 

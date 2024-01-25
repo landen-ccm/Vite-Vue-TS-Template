@@ -1,7 +1,7 @@
 import { describe, it, test, expect } from 'vitest'
 
 import { mount } from '@vue/test-utils'
-import PokemonSearchTab from './PokemonSearchTab.vue'
+import PokemonSearchTab from './../components/PokemonSearchTab.vue'
 
 describe('PokemonSearchTab', () => {
   const wrapper = mount(PokemonSearchTab, {

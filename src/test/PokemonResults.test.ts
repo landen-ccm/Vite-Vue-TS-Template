@@ -1,7 +1,7 @@
 import { describe, it, test, expect } from 'vitest'
 
 import { mount } from '@vue/test-utils'
-import PokemonResults from './PokemonResults.vue'
+import PokemonResults from './../components/PokemonResults.vue'
 
 describe('PokemonResults', () => {
   const wrapper = mount(PokemonResults, {

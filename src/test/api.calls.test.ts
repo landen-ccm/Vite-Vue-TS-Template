@@ -1,4 +1,4 @@
-import { getPokemon, api, getPokemonList, getFavorites, setFavorites } from './api.calls'
+import { getPokemon, api, getPokemonList, getFavorites, setFavorites } from '../api.calls'
 import { afterEach, beforeEach, describe, expect, vi, test } from 'vitest'
 import axios from 'axios'
 

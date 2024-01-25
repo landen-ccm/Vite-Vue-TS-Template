@@ -10,13 +10,8 @@ const props = withDefaults(
   { errorMessage: 'No Pokemon found' }
 )
 
-const sum = (a: number, b: number) => {
-  return a + b
-}
-
 const hasError = computed(() => props.pokemonList.length === 0)
 </script>
-
 <template>
   <div class="content" v-if="!hasError">
     <PokemonCard

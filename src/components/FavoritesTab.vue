@@ -14,14 +14,10 @@ const clearFavorites = inject<() => void>('clearFavorites', () => {})
 const favoritePokemon = ref<Pokemon[]>([])
 
 async function populateFavorites() {
-  try {
-    const response = await Promise.all(
-      Array.from(props.favorites).map((id) => getPokemon(id.toString()))
-    )
-    favoritePokemon.value = response.flatMap((poke) => poke).sort((a, b) => a.id - b.id)
-  } catch (error) {
-    console.log(error)
-  }
+  const response = await Promise.all(
+    Array.from(props.favorites).map((id) => getPokemon(id.toString()))
+  )
+  favoritePokemon.value = response.flatMap((poke) => poke).sort((a, b) => a.id - b.id)
 }
 
 onMounted(async () => {
