@@ -1,11 +1,10 @@
 <template>
-  <header>
-    <div class="wrapper">
-      <TheNavBar />
-    </div>
-  </header>
-
-  <RouterView />
+  <header></header>
+  <RouterView v-slot="{ Component }" :key="$route.path">
+    <KeepAlive>
+      <component :is="Component" />
+    </KeepAlive>
+  </RouterView>
 </template>
 
 <style lang="scss">

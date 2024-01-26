@@ -1,81 +1,97 @@
+<script setup lang="ts">
+import Pokedex from '@/components/Pokemon/Pokedex.vue'
+import FavoritePokemon from '@/components/Pokemon/FavoritePokemon.vue'
+import SearchBar from '@/components/SearchBar.vue'
+import TabView from 'primevue/tabview'
+import TabPanel from 'primevue/tabpanel'
+import Toast from 'primevue/toast'
+import { useToast } from 'primevue/usetoast'
+import { getPokemon } from '@/composable/getPokemon'
+import type { Pokemon } from '../composable/getPokemon'
+import { APIURL, getFavorites, setFavorites, getAllPokemon } from '../helpers/index'
+import { getPagination, setPagination, getPageNumber, setPageNumber } from '../helpers/index'
+
+const searchQuery = ref('')
+const pageNumber = ref(1) // dummy values for change on mount
+const pagination = ref({ name: '1', val: 1 }) // dummy values for change on mount
+const favorites = ref(new Set([-1])) // dummy values for change on mount
+const offset = computed(() => (pageNumber.value - 1) * pagination.value.val)
+const url = computed(() => {
+  // if searchQuery empty return a list of pokemon else return one pokemon
+  if (searchQuery.value == '') {
+    // compute a new url based on page number and pagination size
+
+    return APIURL + `?limit=${pagination.value.val}&offset=${offset.value}`
+  } else {
+    return APIURL + searchQuery.value
+  }
+})
+
+const pokemon: Ref<Pokemon[]> = getPokemon(url) as Ref<Pokemon[]> // url not yet defined above the computed, get pokemon returns a ref
+
+const allPokemon = ref<Pokemon[]>()
+getAllPokemon().then((result) => (allPokemon.value = result))
+const searchHandler = (searchText: string) => (searchQuery.value = searchText)
+
+const paginationHandler = (searchPagination: { name: string; val: number }) => {
+  pagination.value = searchPagination // might have to reset page number when pagination changes
+  setPagination(pagination.value)
+  pageNumber.value = 1
+  setPageNumber(1)
+}
+
+const pageHandler = (pageChange: number) => {
+  pageNumber.value = pageNumber.value + pageChange
+  setPageNumber(pageNumber.value)
+}
+const toast = useToast()
+const onLike = (id: number) => {
+  if (favorites.value.has(Number(id))) {
+    favorites.value.delete(Number(id))
+    setFavorites(favorites.value)
+    toast.add({
+      severity: 'error',
+      detail: 'Pokemon removed from favorites!',
+      life: 2500
+    })
+  } else {
+    favorites.value.add(Number(id))
+    setFavorites(favorites.value)
+    toast.add({
+      severity: 'success',
+      detail: 'Pokemon added to favorites!',
+      life: 2500
+    })
+  }
+}
+onMounted(() => {
+  pageNumber.value = getPageNumber()
+  pagination.value = getPagination()
+  favorites.value = getFavorites()
+})
+</script>
+
 <template>
-  <HelloWorld msg="Vite Vue TS" />
-
-  <WelcomeItem>
-    <template #icon>
-      <DocumentationIcon />
-    </template>
-    <template #heading>Documentation</template>
-
-    Vue's
-    <a href="https://vuejs.org/" target="_blank" rel="noopener">official documentation</a>
-    provides you with all information you need to get started.
-  </WelcomeItem>
-
-  <WelcomeItem>
-    <template #icon>
-      <ToolingIcon />
-    </template>
-    <template #heading>Tooling</template>
-
-    This project is served and bundled with
-    <a href="https://vitejs.dev/guide/features.html" target="_blank" rel="noopener">Vite</a>. The
-    recommended IDE setup is
-    <a href="https://code.visualstudio.com/" target="_blank" rel="noopener">VSCode</a> +
-    <a href="https://github.com/johnsoncodehk/volar" target="_blank" rel="noopener">Volar</a>. If
-    you need to test your components and web pages, check out
-    <a href="https://www.cypress.io/" target="_blank" rel="noopener">Cypress</a> and
-    <a href="https://on.cypress.io/component" target="_blank" rel="noopener"
-      >Cypress Component Testing</a
-    >.
-
-    <br />
-
-    More instructions are available in <code>README.md</code>.
-  </WelcomeItem>
-
-  <WelcomeItem>
-    <template #icon>
-      <EcosystemIcon />
-    </template>
-    <template #heading>Ecosystem</template>
-
-    Get official tools and libraries for your project:
-    <a href="https://pinia.vuejs.org/" target="_blank" rel="noopener">Pinia</a>,
-    <a href="https://router.vuejs.org/" target="_blank" rel="noopener">Vue Router</a>,
-    <a href="https://test-utils.vuejs.org/" target="_blank" rel="noopener">Vue Test Utils</a>, and
-    <a href="https://github.com/vuejs/devtools" target="_blank" rel="noopener">Vue Dev Tools</a>. If
-    you need more resources, we suggest paying
-    <a href="https://github.com/vuejs/awesome-vue" target="_blank" rel="noopener">Awesome Vue</a>
-    a visit.
-  </WelcomeItem>
-
-  <WelcomeItem>
-    <template #icon>
-      <CommunityIcon />
-    </template>
-    <template #heading>Community</template>
-
-    Got stuck? Ask your question on
-    <a href="https://chat.vuejs.org" target="_blank" rel="noopener">Vue Land</a>, our official
-    Discord server, or
-    <a href="https://stackoverflow.com/questions/tagged/vue.js" target="_blank" rel="noopener"
-      >StackOverflow</a
-    >. You should also subscribe to
-    <a href="https://news.vuejs.org" target="_blank" rel="noopener">our mailing list</a> and follow
-    the official
-    <a href="https://twitter.com/vuejs" target="_blank" rel="noopener">@vuejs</a>
-    twitter account for latest news in the Vue world.
-  </WelcomeItem>
-
-  <WelcomeItem>
-    <template #icon>
-      <SupportIcon />
-    </template>
-    <template #heading>Support Vue</template>
-
-    As an independent project, Vue relies on community backing for its sustainability. You can help
-    us by
-    <a href="https://vuejs.org/sponsor/" target="_blank" rel="noopener">becoming a sponsor</a>.
-  </WelcomeItem>
+  <Toast position="top-right" />
+  <SearchBar @submit-search="searchHandler"></SearchBar>
+  <TabView>
+    <TabPanel header="Pokedex">
+      <Pokedex
+        @onLike="onLike"
+        @paginationChange="paginationHandler"
+        @pageChange="pageHandler"
+        :pokemon="pokemon"
+        :pagination="pagination"
+        :page="pageNumber"
+        :favorites="favorites"
+      ></Pokedex>
+    </TabPanel>
+    <TabPanel :header="'Favorites: ' + favorites.size" v-if="pokemon?.length > 2">
+      <FavoritePokemon
+        :pokemon="allPokemon"
+        :favorites="favorites"
+        @onLike="onLike"
+      ></FavoritePokemon>
+    </TabPanel>
+  </TabView>
 </template>
