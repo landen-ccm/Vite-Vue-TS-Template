@@ -36,9 +36,9 @@ const query = router.currentRoute.value.query
 const pageNumber = ref(3)
 const pageCount = ref(24)
 const pokemonList = ref<PaginatedPokemon | null>()
-const pokemonDetails = ref<(PokemonDetails | null)[]>([])
-const selectedPokemon = ref<PokemonDetails | null>()
-const detailedPokemon = ref<PokemonDetails>()
+const pokemonDetails = ref<(Pokemon | null)[]>([])
+const selectedPokemon = ref<Pokemon | null>()
+const detailedPokemon = ref<Pokemon>()
 const favorites = ref<{ [key: number]: true | undefined }>({})
 const loading = ref<boolean>(true)
 
@@ -47,13 +47,6 @@ const lazyParams = ref<{ first: number; page: number; rows: number }>({
   page: 0,
   rows: 24
 })
-
-async function cacheDetails(id: number) {
-  // Using null to guard against spamming the api
-  pokemonDetails.value[id] = null
-  const theDeets = await getPokemonDetails(id + 1)
-  pokemonDetails.value[id] = theDeets
-}
 
 function lazyLoadPokemon(event: any) {
   loading.value = true
@@ -75,23 +68,17 @@ function onPage(event: any) {
 onMounted(async () => {
   pokemonList.value = await getAllPokemon()
   lazyLoadPokemon({ first: 0 })
-  const details = await getPokemonDetails(59) //59)
+  //const details = await getPokemonDetails(59, null) //59)
 })
 
-function updateSelection(newSelection: PokemonDetails) {
+function updateSelection(newSelection: Pokemon) {
   selectedPokemon.value = newSelection
   detailedPokemon.value = newSelection
 }
 
-function isSelected(pokemon: PokemonDetails): boolean {
+function isSelected(pokemon: Pokemon): boolean {
   const selPokemon = selectedPokemon.value
-  return (
-    !!selPokemon &&
-    !!pokemon &&
-    !!selPokemon.details &&
-    !!pokemon.details &&
-    pokemon.details.id === selPokemon.details.id
-  )
+  return !!selPokemon && !!pokemon && !!selPokemon && !!pokemon && pokemon.id === selPokemon.id
 }
 
 function updateFavorites(id: number) {
@@ -124,19 +111,16 @@ function updateFavorites(id: number) {
         <div class="grid dataview-content" >
         <PokemonCard 
         @favored="updateFavorites" 
-        :favored="favorites[pokemon.details.id] !== undefined" 
+        :favored="favorites[pokemon.id] !== undefined" 
         @selected="updateSelection" :selected="isSelected(pokemon)" 
         class="col-12" 
-        v-for="(pokemon) in (slotProps.items as PokemonDetails[])" 
-        :pokemon="pokemon" :key="pokemon.details.id">
+        v-for="(pokemon) in (slotProps.items as Pokemon[])" 
+        :pokemon="pokemon" :key="pokemon.id">
         </PokemonCard>
         </div>
       </template>
     </DataView>
-    <DetailsPane
-      v-if="detailedPokemon?.details !== undefined"
-      :pokemon="detailedPokemon"
-    ></DetailsPane>
+    <DetailsPane v-if="detailedPokemon !== undefined" :pokemon="detailedPokemon"></DetailsPane>
   </div>
 </template>
 

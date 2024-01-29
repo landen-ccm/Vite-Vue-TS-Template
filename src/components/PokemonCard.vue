@@ -1,14 +1,14 @@
 <script setup lang="ts">
-import type { PokemonDetails } from '@/helpers/PokeTypes'
+import type { Pokemon, PokemonDetails } from '@/helpers/PokeTypes'
 import { brightnessAdjust, capitalizeFirstLetter, pokemonTypeToColor } from '@/helpers/formatting'
 import Card from 'primevue/card'
 import Button from 'primevue/button'
 
-const props = defineProps<{ pokemon: PokemonDetails; selected: boolean; favored: boolean }>()
-const pokemon = ref(props.pokemon.details)
+const props = defineProps<{ pokemon: Pokemon; selected: boolean; favored: boolean }>()
+const pokemon = ref(props.pokemon)
 
 const emit = defineEmits<{
-  (e: 'selected', pokemon: PokemonDetails): void
+  (e: 'selected', pokemon: Pokemon): void
   (e: 'favored', id: number): void
 }>()
 
@@ -28,7 +28,7 @@ function submitEvent() {
 }
 
 const highlightOnSelected = computed(() => {
-  const color = brightnessAdjust(pokemonTypeToColor[pokemon.value.types[0].type.name], 0.65)
+  const color = brightnessAdjust(pokemonTypeToColor[pokemon.value.types[0].type.name], 0.45)
   return props.selected
     ? {
         backgroundColor: color
@@ -42,16 +42,16 @@ const favoredIcon = computed(() => {
 
 const favoredIconColor = computed(
   () =>
-    `${brightnessAdjust(pokemonTypeToColor[pokemon.value.types[0].type.name], +props.favored * 1.1 + +!props.favored * 1000)}`
+    `${brightnessAdjust(pokemonTypeToColor[pokemon.value.types[0].type.name], +props.favored * 1.25 + +!props.favored * 1000)}`
 )
 
 const buttonBackgroundColor = computed(
-  () => `${brightnessAdjust(pokemonTypeToColor[pokemon.value.types[0].type.name], 0.77)}`
+  () => `${brightnessAdjust(pokemonTypeToColor[pokemon.value.types[0].type.name], 0.65)}`
 )
 
 function favoredEvent(event: Event) {
   event.stopPropagation()
-  emit('favored', props.pokemon.details.id)
+  emit('favored', props.pokemon.id)
 }
 </script>
 <template>

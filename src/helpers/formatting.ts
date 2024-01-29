@@ -3,14 +3,15 @@ export function capitalizeFirstLetter(text: string) {
 }
 
 export function brightnessAdjust(color: string, change: number) {
-  console.log(color)
   return (
     '#' +
     color
       .replace('#', '')
       .match(/(..)/g)
       ?.map((val: string) => {
-        return Math.max(0, Math.min(255, Math.floor(Number(`0x${val}`) * change))).toString(16)
+        return Math.max(0, Math.min(255, Math.floor(Number(`0x${val}`) * change)))
+          .toString(16)
+          .padStart(2, '0')
       })
       .join('')
   )

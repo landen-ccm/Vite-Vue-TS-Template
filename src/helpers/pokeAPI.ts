@@ -33,35 +33,40 @@ export async function getAllPokemon(): Promise<PaginatedPokemon | null> {
   return await getPaginatedPokemon(100000, 0)
 }
 
-export async function detailedPage(
-  page: number,
-  count: number
-): Promise<(PokemonDetails | null)[]> {
-  const limbo: (PokemonDetails | null)[] = []
+export async function detailedPage(page: number, count: number): Promise<(Pokemon | null)[]> {
+  const limbo: (Pokemon | null)[] = []
+  const pageInfo = await getAllPokemon()
   for (let id = page * count; id < page * count + count; id++) {
-    limbo.push(await getPokemonDetails(id))
+    limbo.push(await getPokemonDetails(id, pageInfo))
   }
   Promise.allSettled(limbo) // With thoughts and prayers
   return limbo
 }
 
-export async function getPokemonDetails(id: number): Promise<PokemonDetails | null> {
-  const pageInfo = await getPaginatedPokemon(1, id - 1)
-  console.dir(pageInfo)
-
+export async function getPokemonDetails(
+  id: number,
+  pageInfo: PaginatedPokemon | null
+): Promise<Pokemon | null> {
+  let url = ''
   if (pageInfo === null) {
-    return null
+    pageInfo = await getPaginatedPokemon(1, id - 1)
+    if (pageInfo === null) {
+      return null
+    }
+    url = pageInfo.results[0].url
+  } else {
+    console.dir(pageInfo.results[id])
+    url = pageInfo.results[id].url
   }
+  console.dir(url)
 
   try {
-    const { data: info } = await axios.get<Pokemon>(pageInfo.results[0].url)
+    const { data: info } = await axios.get<Pokemon>(url)
     if (info === null) {
       return null
     }
-    const details = pageInfo as PokemonDetails
-    details.details = info
 
-    return details
+    return info
   } catch (error) {
     return null
   }

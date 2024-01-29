@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { type PokemonDetails, orderedSpriteKeys, type DefaultSpriteKeys } from '@/helpers/PokeTypes'
+import {
+  type PokemonDetails,
+  orderedSpriteKeys,
+  type DefaultSpriteKeys,
+  type Pokemon
+} from '@/helpers/PokeTypes'
 import { capitalizeFirstLetter, pokemonTypeToColor, pokemonStatToColor } from '@/helpers/formatting'
 import Card from 'primevue/card'
 import Carousel from 'primevue/carousel'
@@ -10,8 +15,7 @@ import Divider from 'primevue/divider'
 import Knob from 'primevue/knob'
 import VirtualScroller from 'primevue/virtualscroller'
 
-type passType = { pokemon: PokemonDetails }
-const props = defineProps<passType>()
+const props = defineProps<{ pokemon: Pokemon }>()
 
 const sprites = computed((): string[] => {
   const animatedSprites: string[] = []
@@ -19,13 +23,12 @@ const sprites = computed((): string[] => {
 
   // Prefer animated sprites
   for (const key of orderedSpriteKeys) {
-    const animatedUrl =
-      props.pokemon.details.sprites.versions['generation-v']['black-white'].animated[key]
+    const animatedUrl = props.pokemon.sprites.versions['generation-v']['black-white'].animated[key]
     if (animatedUrl !== null) {
       animatedSprites.push(animatedUrl)
     }
 
-    const defaultUrl = props.pokemon.details.sprites[key]
+    const defaultUrl = props.pokemon.sprites[key]
 
     if (defaultUrl !== null) {
       defaultSprites.push(defaultUrl)
@@ -38,7 +41,7 @@ const sprites = computed((): string[] => {
 const pokemonTypes = computed(() => {
   const outTypes: { name: string; color: string; url: string }[] = []
 
-  for (const pType of props.pokemon.details.types) {
+  for (const pType of props.pokemon.types) {
     outTypes.push({
       name: pType.type.name,
       url: pType.type.url,
@@ -52,7 +55,7 @@ const pokemonTypes = computed(() => {
 const pokemonAbilities = computed(() => {
   const outAbilities: string[] = []
 
-  for (const ability of props.pokemon.details.abilities) {
+  for (const ability of props.pokemon.abilities) {
     outAbilities.push(ability.ability.name)
   }
 
@@ -64,7 +67,7 @@ const pokemonAbilities = computed(() => {
 const pokemonMoves = computed(() => {
   const outMoves: string[] = []
 
-  for (const move of props.pokemon.details.moves) {
+  for (const move of props.pokemon.moves) {
     outMoves.push(move.move.name)
   }
 
@@ -76,7 +79,7 @@ const pokemonMoves = computed(() => {
 const pokemonStats = computed(() => {
   const outStats: { name: string; value: number }[] = []
 
-  for (const stat of props.pokemon.details.stats) {
+  for (const stat of props.pokemon.stats) {
     let name = stat.stat.name
     if (name.includes('special')) {
       const res = name.match(/special-(.*)/)
@@ -97,7 +100,7 @@ const pokemonStats = computed(() => {
 <template>
   <Card class="details-card">
     <template #header>
-      {{ capitalizeFirstLetter(pokemon.details.name) }}
+      {{ capitalizeFirstLetter(pokemon.name) }}
       <Carousel
         :value="sprites"
         :num-visible="1"
