@@ -1,14 +1,26 @@
 <script setup lang="ts">
 import { ref } from 'vue'
-import SearchBar from '../components/SearchBar.vue'
-import Dropdown from 'primevue/dropdown'
 import Button from 'primevue/button'
 import Card from 'primevue/card'
-import { getallpokemon } from '@/composable/searchAllPokemon'
-import type { Poke, Pokemon } from '@/helpers/PokeTypes'
+import {
+  type PokemonDetails,
+  type PaginatedPokemon,
+  type Pokemon,
+  type NameAndUrl
+} from '@/helpers/PokeTypes'
 import Toast from 'primevue/toast'
 import { useToast } from 'primevue/usetoast'
 import router from '@/router'
+import {
+  detailedPage,
+  getAllPokemon,
+  getPaginatedPokemon,
+  getPokemonDetails
+} from '@/helpers/pokeAPI'
+import { capitalizeFirstLetter } from '@/helpers/formatting'
+import DataView from 'primevue/dataview'
+import PokemonCard from '@/components/PokemonCard.vue'
+import { saveFavorites } from '@/helpers/storage'
 
 type PageCount = 25 | 50 | 100 | -1
 
@@ -21,218 +33,116 @@ const displayCountOptions: { text: string; value: PageCount }[] = [
 
 const query = router.currentRoute.value.query
 
-const allPokemon = ref<Poke[] | null>(null)
-const favoritesLength = ref(localStorage.length)
-const pageNumber = ref(query.pageSize ? query.pageSize.toString() : 0)
-const showCount = ref<PageCount>(query.pageIndex ? +query.pageIndex as PageCount : 25)
-const disableForward = ref(false)
-const disableBack = ref(true)
-const toast = useToast()
-const showFavorites = ref(false)
-const favorites = ref({ ...localStorage })
+const pageNumber = ref(3)
+const pageCount = ref(24)
+const pokemonList = ref<PaginatedPokemon | null>()
+const pokemonDetails = ref<(Pokemon | null)[]>([])
+const selectedPokemon = ref<Pokemon | null>()
+const detailedPokemon = ref<Pokemon>()
+const favorites = ref<{ [key: number]: true | undefined }>({})
+const loading = ref<boolean>(true)
 
-const numberOfPages = computed(() => {
-  if (allPokemon.value) {
-    return allPokemon.value.length / showCount.value
-  }
+const lazyParams = ref<{ first: number; page: number; rows: number }>({
+  first: 1,
+  page: 0,
+  rows: 24
 })
 
-const paginatedData = computed(() => {
-  const start = pageNumber.value * showCount.value
-  const end = start + showCount.value
-  swapPage()
-  return allPokemon.value?.slice(start, end)
-})
-
-const toggleFav = () => {
-  showFavorites.value = !showFavorites.value
-  favorites.value = { ...localStorage }
-}
-
-const checkForFavorites = () => {
-  if (allPokemon.value)
-    for (const pokemon of allPokemon.value) {
-      if (localStorage.getItem(pokemon.name)) {
-        pokemon.isFav = true
-      }
-    }
-}
-
-const swapPage = () => {
-  router.push({ name: '/', query: { pageSize: showCount.value, pageIndex: pageNumber.value}})
-}
-
-const forwardButtonHandler = () => {
-  pageNumber.value += 1
-  disableBack.value = false
-  if (numberOfPages.value && Math.floor(numberOfPages.value) === pageNumber.value) {
-    disableForward.value = true
-  }
-}
-
-const backButtonHandler = () => {
-  pageNumber.value -= 1
-  disableForward.value = false
-  if (pageNumber.value === 0) {
-    disableBack.value = true
-  }
-}
-
-const addToFavorites = (pokemon: Poke) => {
-  if (pokemon.isFav != true) {
-    toast.add({
-      severity: 'success',
-      summary: 'Added to Favorites',
-      detail: `${pokemon.name} is added to favorites`,
-      life: 3000
-    })
-  } else {
-    toast.add({
-      severity: 'info',
-      summary: 'removed from Favorites',
-      detail: `${pokemon.name} is removed from favorites`,
-      life: 3000
-    })
-  }
-
-  if (pokemon.isFav != true) {
-    localStorage.setItem(`${pokemon.name}`, JSON.stringify(pokemon))
-    favoritesLength.value += 1
-    pokemon.isFav = true
-  } else {
-    localStorage.removeItem(`${pokemon.name}`)
-    favoritesLength.value -= 1
-    pokemon.isFav = false
-  }
-}
-
-const addAllToFavorites = () => {
-  paginatedData.value?.forEach((text) => {
-    addToFavorites(text)
+function lazyLoadPokemon(event: any) {
+  loading.value = true
+  console.dir(event)
+  lazyParams.value = { ...lazyParams.value, first: event?.first || lazyParams.value.first }
+  detailedPage(lazyParams.value.page, lazyParams.value.rows).then((pokes) => {
+    console.log('Loaded!')
+    loading.value = false
+    pokemonDetails.value = pokes.filter((poke) => (poke !== null ? poke : undefined))
   })
 }
-
-const clearLocalStorage = () => {
-  localStorage.clear();
-  favoritesLength.value = 0;
-  router.go();
-}
-
-const submit = async (res: Pokemon | null) => {
-  if (res) {
-    allPokemon.value = [{ name: res.name, url: `https://pokeapi.co/api/v2/pokemon/${res.id}` }]
-    checkForFavorites()
-  } else {
-    allPokemon.value = await getallpokemon()
-    checkForFavorites()
-  }
+function onPage(event: any) {
+  console.log('PAGE!')
+  console.dir(event)
+  lazyParams.value = event
+  lazyLoadPokemon(event)
 }
 
 onMounted(async () => {
-  allPokemon.value = await getallpokemon()
-  checkForFavorites()
-  // console.log(Object.keys({ ...localStorage }))
-  // const butterfree = localStorage.butterfree
-  // console.log(JSON.parse(butterfree).name)
+  pokemonList.value = await getAllPokemon()
+  lazyLoadPokemon({ first: 0 })
+  //const details = await getPokemonDetails(59, null) //59)
 })
+
+function updateSelection(newSelection: Pokemon) {
+  selectedPokemon.value = newSelection
+  detailedPokemon.value = newSelection
+}
+
+function isSelected(pokemon: Pokemon): boolean {
+  const selPokemon = selectedPokemon.value
+  return !!selPokemon && !!pokemon && !!selPokemon && !!pokemon && pokemon.id === selPokemon.id
+}
+
+function updateFavorites(id: number) {
+  favorites.value[id] = favorites.value[id] === undefined ? true : undefined
+  saveFavorites(favorites.value)
+}
 </script>
 
 <template>
-  <Button @click="toggleFav">favorites {{ favoritesLength }}</Button>
-  <div>
-    <div v-if="!showFavorites">
-      <Button @click="addAllToFavorites" v-if="showCount !== -1">Add all to favorites</Button>
-      <SearchBar @submit="submit"></SearchBar>
-      <Dropdown v-model="showCount" :options="displayCountOptions" optionLabel="text" optionValue="value"></Dropdown>
-      <!-- <pre style="color: black;">{{ paginatedData }}</pre> -->
-      <div class="card-container">
-        <ul v-if="allPokemon" class>
-          <li v-for="pokemon in paginatedData" :key="pokemon.name">
-            <Card class="p-card">
-              <template #title> {{ pokemon.name }} </template>
-              <template #content>
-                <p class="m-0">
-                  <img
-                    :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemon.url.split('/')[6]}.png`"
-                    alt="Pokemon Image" />
-                </p>
-                <Button>
-                  <router-link :to="{
-                    path: `/pokemonDetails/${pokemon.name}`,
-                    query: { pokemon: pokemon.url.split('/')[6] }
-                  }">view</router-link>
-                </Button>
-              </template>
-              <template #footer>
-                <Toast />
-                <i :class="pokemon.isFav === true ? 'pi pi-heart-fill' : 'pi pi-heart'"
-                  @click="addToFavorites(pokemon)"></i>
-              </template>
-            </Card>
-          </li>
-        </ul>
-        <p v-else>No Pokémon data available.</p>
-      </div>
-    </div>
-    <div v-else>
-      <Button @click="clearLocalStorage">Remove all favorites</Button>
-      <SearchBar @submit="submit"></SearchBar>
-      <Dropdown v-model="showCount" :options="displayCountOptions" optionLabel="text" optionValue="value"></Dropdown>
-      <ul>
-        <li v-for="pokemon in Object.values(favorites)" :key="JSON.parse(pokemon).name">
-          <Card class="p-card">
-            <template #title> {{ JSON.parse(pokemon).name }} </template>
-            <template #content>
-              <p class="m-0">
-                <img
-                  :src="`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${JSON.parse(pokemon).url.split('/')[6]}.png`"
-                  alt="Pokemon Image" />
-              </p>
-              <Button>
-                <router-link :to="{
-                  path: `/pokemonDetails/${pokemon.name}`,
-                  query: { pokemon: JSON.parse(pokemon).url.split('/')[6] }
-                }">view</router-link>
-              </Button>
-            </template>
-          </Card>
-        </li>
-      </ul>
-    </div>
-    <Button class="page-button" @click="backButtonHandler" :disabled="disableBack">Back</Button>
-    <Button class="page-button" @click="forwardButtonHandler" :disabled="disableForward">Forwards</Button>
+  <div class="general-layout">
+    <DataView
+      dataKey=""
+      class="dataview-main"
+      lazy
+      :totalRecords="pokemonList?.count"
+      :value="pokemonDetails"
+      :loading="loading"
+      paginatorPosition="both"
+      layout="grid"
+      @page="onPage"
+      :first="lazyParams.first"
+      paginator
+      :rows="lazyParams.rows"
+    >
+      <template #header>
+        <h1>Pokemon</h1>
+      </template>
+      <template #grid="slotProps">
+        <!-- prettier-ignore -->
+        <div class="grid dataview-content" >
+        <PokemonCard 
+        @favored="updateFavorites" 
+        :favored="favorites[pokemon.id] !== undefined" 
+        @selected="updateSelection" :selected="isSelected(pokemon)" 
+        class="col-12" 
+        v-for="(pokemon) in (slotProps.items as Pokemon[])" 
+        :pokemon="pokemon" :key="pokemon.id">
+        </PokemonCard>
+        </div>
+      </template>
+    </DataView>
+    <DetailsPane v-if="detailedPokemon !== undefined" :pokemon="detailedPokemon"></DetailsPane>
   </div>
-  <footer>{{ pageNumber + 1 }}</footer>
 </template>
 
-<style lang="scss">
-.page-button {
-  margin-left: 1em;
-}
-
-.page-button:disabled {
-  opacity: 0.2;
-}
-
-.card-container {
+<style>
+.dataview-content {
   display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  flex-flow: wrap;
 }
 
-.p-card {
-  width: 200px;
-  margin: 1rem auto;
-  border: 1px solid #c8ced3;
-  border-radius: 4px;
-  padding: 1rem;
+.dataview-main {
+  min-width: 15em;
+  width: auto;
+  padding: 1em;
+  width: 58em;
+  max-width: 60em;
+  border-radius: 25px;
 }
 
-ul {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  grid-template-rows: repeat(5, 1fr);
-  grid-gap: 5px;
-  text-align: center;
+.general-layout {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  padding: none;
 }
 </style>

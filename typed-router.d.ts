@@ -42,6 +42,7 @@ declare module 'vue-router/auto/routes' {
     '/': RouteRecordInfo<'/', '/', Record<never, never>, Record<never, never>>,
     '/favorites/': RouteRecordInfo<'/favorites/', '/favorites', Record<never, never>, Record<never, never>>,
     '/pokemonDetails/[id]': RouteRecordInfo<'/pokemonDetails/[id]', '/pokemonDetails/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
+    '/pokemonDetails/whatever': RouteRecordInfo<'/pokemonDetails/whatever', '/pokemonDetails/whatever', Record<never, never>, Record<never, never>>,
   }
 }
 
